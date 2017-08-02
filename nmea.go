@@ -75,6 +75,7 @@ func init() {
 		"GPSTN": TypeId{Talker: TALKER_ID_GPS, Code: "STN"}, // Multiple Data ID
 		"GPTRF": TypeId{Talker: TALKER_ID_GPS, Code: "TRF"}, // Transit Fix Data
 		"GPTTM": TypeId{Talker: TALKER_ID_GPS, Code: "TTM"}, // Tracked Target Message
+		"GPTXT": TypeId{Talker: TALKER_ID_GPS, Code: "TXT"}, // Tracked Status of External Antenna
 		"GPVBW": TypeId{Talker: TALKER_ID_GPS, Code: "VBW"}, // Dual Ground/Water Speed
 		"GPVDR": TypeId{Talker: TALKER_ID_GPS, Code: "VDR"}, // Set and Drift
 		"GPVHW": TypeId{Talker: TALKER_ID_GPS, Code: "VHW"}, // Water Speed and Heading
@@ -119,11 +120,11 @@ func (m Message) String() string {
 }
 
 func (m Message) Payload() string {
-	return m.Type.String() + strings.Join(m.Fields, ",")
+	return m.Type.String() + FIELD_DELIMITER + strings.Join(m.Fields, FIELD_DELIMITER)
 }
 
 func (m Message) ComputeChecksum() (c uint8) {
-	for i := 1; i < len(m.Payload()); i++ {
+	for i := 0; i < len(m.Payload()); i++ {
 		c ^= m.Payload()[i]
 	}
 	return
