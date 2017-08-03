@@ -166,7 +166,12 @@ type Message struct {
 }
 
 func (m Message) String() string {
-	return PREFIX + m.Payload() + SUFFIX + fmt.Sprintf("%x", m.Checksum)
+	output := PREFIX + m.Payload() + SUFFIX
+	checksum := fmt.Sprintf("%X", m.Checksum)
+	if len(checksum) == 1 {
+		checksum = "0" + checksum // Padd with 0 if needed
+	}
+	return output + checksum
 }
 
 func (m Message) Payload() string {
