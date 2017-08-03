@@ -18,34 +18,52 @@ func TestNMEAMessage(t *testing.T) {
 
 		// MTK NMEA Packet Protocol
 		// From "L80 GPS Protocol Specification"
-
-		// TODO: Manage MTK Packet
-		/*
-			"$PMTK010,001*2E",
-			"$PMTK011,MTKGPS*08",
-			"$PMTK001, 869,3*37",
-			"$PMTK101*32",
-			"$PMTK102*31",
-			"$PMTK103*30",
-			"$PMTK104*37",
-			"$PMTK161,0*28",
-			"$PMTK183*38",
-			"$PMTKLOG,456,0,11,31,2,0,0,0,3769,46*48",
-			"$PMTK184,1*22",
-			"$PMTK185,1*23",
-			"$PMTK622,1*29",
-			"$PMTK225,8*23",
-			"$PMTK251,38400*27",
-			"$PMTK286,0*22",
-			"$PMTK300,1000,0,0,0,0*1C",
-			"$PMTK301,2*2E",
-			"$PMTK313,1*2E",
-		*/
+		"$PMTK010,001*2E",
+		"$PMTK011,MTKGPS*08",
+		"$PMTK001,869,3*37",
+		"$PMTK101*32",
+		"$PMTK102*31",
+		"$PMTK103*30",
+		"$PMTK104*37",
+		"$PMTK161,0*28",
+		"$PMTK183*38",
+		"$PMTKLOG,456,0,11,31,2,0,0,0,3769,46*48",
+		"$PMTK184,1*22",
+		"$PMTK185,1*23",
+		"$PMTK622,1*29",
+		"$PMTK225,8*23",
+		"$PMTK251,38400*27",
+		"$PMTK286,0*22",
+		"$PMTK300,1000,0,0,0,0*1C",
+		"$PMTK301,2*2E",
+		"$PMTK313,1*2E",
+		"$PMTK314,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,1,0*2D",
+		"$PMTK314,-1*04",
+		// "$PMTK386,0.4*19",
+		"$PMTK400*36",
+		"$PMTK401*37",
+		"$PMTK413*34",
+		"$PMTK414*33",
+		"$PMTK605*31",
+		"$PMTK500,1000,0,0,0,0*1A",
+		"$PMTK501,1*2B",
+		"$PMTK513,1*28",
+		"$PMTK514,1,1,1,1,1,5,1,1,1,1,1,1,0,1,1,1,1,1,1*2A",
+		"$PMTK705,AXN_3.10_3333_12102201,0000,QUECTEL-L80,*18",
+		"$PMTK869,1,1*35",
 	}
 
-	for _, n := range nmeas {
-		if _, err := Parse(n); err != nil {
-			t.Fatal(err)
+	for _, raw := range nmeas {
+		msg, err := Parse(raw)
+
+		// Check parsing
+		if err != nil {
+			t.Fatalf("Unable to parse \"%s\", err: %s", raw, err.Error())
+		}
+
+		// Check bijectivity of parse/serialization process
+		if msg.String() != raw {
+			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.String())
 		}
 	}
 }
