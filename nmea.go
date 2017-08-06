@@ -6,10 +6,12 @@ import (
 	"strings"
 )
 
+// Interface for each kind of NMEA message
 type NMEA interface {
 	GetMessage() *Message
 }
 
+// Interface for each kind of NMEA header according to TalkerId
 type Header interface {
 	GetTypeId() TypeId
 	String() string
@@ -53,6 +55,7 @@ func (m *Message) GetMessage() *Message {
 	return m
 }
 
+// Serialize message to render raw
 func (m Message) String() string {
 	output := PREFIX + m.Payload() + SUFFIX
 	checksum := fmt.Sprintf("%X", m.Checksum)
@@ -62,6 +65,7 @@ func (m Message) String() string {
 	return output + checksum
 }
 
+// Payload return data after $ and before *
 func (m Message) Payload() string {
 	if f := strings.Join(m.Fields, FIELD_DELIMITER); len(f) > 0 {
 		return m.Type.String() + FIELD_DELIMITER + strings.Join(m.Fields, FIELD_DELIMITER)
@@ -69,6 +73,7 @@ func (m Message) Payload() string {
 	return m.Type.String()
 }
 
+// ComputeChecksum recompute checksum from extracted payload
 func (m Message) ComputeChecksum() (c uint8) {
 	for i := 0; i < len(m.Payload()); i++ {
 		c ^= m.Payload()[i]
@@ -122,6 +127,7 @@ func (m *Message) parse(data string) (err error) {
 	return nil
 }
 
+// Parse return message for any kind of NMEA message raw
 func Parse(raw string) (NMEA, error) {
 	var err error
 	m := &Message{}

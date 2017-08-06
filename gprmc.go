@@ -22,15 +22,15 @@ type GPRMC struct {
 
 	DateTimeUTC       time.Time // Aggregation of TimeUTC+Date data field
 	Valid             RMCValid  // 'V' =Invalid / 'A' = Valid
-	Latitude          LatLong
-	Longitude         LatLong
-	Speed             float64 // Speed over ground in knots
-	COG               float64 // Course over ground in degree
-	MagneticVariation float64 // Magnetic variation in degree, not being output
+	Latitude          LatLong   // In decimal format
+	Longitude         LatLong   // In decimal format
+	Speed             float64   // Speed over ground in knots
+	COG               float64   // Course over ground in degree
+	MagneticVariation float64   // Magnetic variation in degree, not being output
 	PositionningMode  PositionningMode
 }
 
-func (m *GPRMC) GetMessage() *Message {
+func (m *GPRMC) GetMessage() *Message { // Implement NMEA interface
 	return &m.Message
 }
 
@@ -76,6 +76,7 @@ func (m *GPRMC) parse() (err error) {
 			case WEST:
 				m.MagneticVariation = 0 - m.MagneticVariation
 			case EAST:
+				// Allowed direction
 			default:
 				return fmt.Errorf("Wrong magnetic variation direction (got: %s)", m.Fields[10])
 			}

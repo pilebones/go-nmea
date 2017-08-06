@@ -22,6 +22,7 @@ const (
 	TALKER_ID_QZ          TalkerId = "QZ" // QZSS regional GPS augmentation system (Japan)
 )
 
+// Dictionnary of all kind of NMEA message header by full-code
 var TypeIds map[string]Header
 
 func init() {
