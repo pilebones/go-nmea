@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+type NMEA interface {
+	GetMessage() *Message
+}
+
 type Header interface {
 	GetTypeId() TypeId
 	String() string
@@ -43,6 +47,10 @@ type Message struct {
 	Type     Header
 	Fields   []string
 	Checksum uint8
+}
+
+func (m *Message) GetMessage() *Message {
+	return m
 }
 
 func (m Message) String() string {
@@ -114,10 +122,19 @@ func (m *Message) parse(data string) (err error) {
 	return nil
 }
 
-func Parse(raw string) (m *Message, err error) {
-	m = &Message{}
+func Parse(raw string) (NMEA, error) {
+	var err error
+	m := &Message{}
 	if err = m.parse(raw); err != nil {
 		return nil, err
 	}
-	return
+
+	switch m.Type.String() {
+	case "GPRMC":
+		gprmc := NewGPRMC(*m)
+		err = gprmc.parse()
+		return gprmc, err
+	}
+
+	return m, err
 }

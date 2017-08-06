@@ -61,9 +61,13 @@ func TestNMEAMessage(t *testing.T) {
 			t.Fatalf("Unable to parse \"%s\", err: %s", raw, err.Error())
 		}
 
+		if msg == nil {
+			t.Fatal("Message shouldn't be nil")
+		}
+
 		// Check bijectivity of parse/serialization process
-		if msg.String() != raw {
-			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.String())
+		if msg.GetMessage().String() != raw {
+			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.GetMessage().String())
 		}
 	}
 }
