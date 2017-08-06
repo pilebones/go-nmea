@@ -20,15 +20,14 @@ func NewGPRMC(m Message) *GPRMC {
 type GPRMC struct {
 	Message
 
-	DateTimeUTC                time.Time // Aggregation of TimeUTC+Date data field
-	Valid                      RMCValid  // 'V' =Invalid / 'A' = Valid
-	Latitude                   LatLong
-	Longitude                  LatLong
-	Speed                      float64        // Speed over ground in knots
-	COG                        float64        // Course over ground in degree
-	MagneticVariation          *float64       // Magnetic variation in degree, not being output
-	MagneticVariationIndicator *CardinalPoint // E/W Magnetic variation E/W indicator, not being output
-	PositionningMode           PositionningMode
+	DateTimeUTC       time.Time // Aggregation of TimeUTC+Date data field
+	Valid             RMCValid  // 'V' =Invalid / 'A' = Valid
+	Latitude          LatLong
+	Longitude         LatLong
+	Speed             float64 // Speed over ground in knots
+	COG               float64 // Course over ground in degree
+	MagneticVariation float64 // Magnetic variation in degree, not being output
+	PositionningMode  PositionningMode
 }
 
 func (m *GPRMC) GetMessage() *Message {
@@ -63,19 +62,24 @@ func (m *GPRMC) parse() (err error) {
 	}
 
 	if len(m.Fields[9]) > 0 {
-		magneticVariation, err := strconv.ParseFloat(m.Fields[9], 64)
-		if err != nil {
+		if m.MagneticVariation, err = strconv.ParseFloat(m.Fields[9], 64); err != nil {
 			return fmt.Errorf("Unable to parse magnetic variation from data field (got: %s)", m.Fields[9])
 		}
-		m.MagneticVariation = &magneticVariation
-	}
 
-	if len(m.Fields[10]) > 0 {
-		magneticVariationIndicator, err := ParseCardinalPoint(m.Fields[10])
-		if err != nil {
-			return fmt.Errorf("Unable to parse magnetic variation indicator from data field (got: %s)", m.Fields[10])
+		if len(m.Fields[10]) > 0 {
+			magneticVariationDir, err := ParseCardinalPoint(m.Fields[10])
+			if err != nil {
+				return fmt.Errorf("Unable to parse magnetic variation indicator from data field (got: %s)", m.Fields[10])
+			}
+
+			switch magneticVariationDir {
+			case WEST:
+				m.MagneticVariation = 0 - m.MagneticVariation
+			case EAST:
+			default:
+				return fmt.Errorf("Wrong magnetic variation direction (got: %s)", m.Fields[10])
+			}
 		}
-		m.MagneticVariationIndicator = &magneticVariationIndicator
 	}
 
 	if m.PositionningMode, err = ParsePositionningMode(m.Fields[11]); err != nil {
