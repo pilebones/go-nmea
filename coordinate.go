@@ -1,6 +1,11 @@
 package nmea
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+	"strconv"
+	"strings"
+)
 
 const (
 	NORTH CardinalPoint = "N"
@@ -15,14 +20,14 @@ func (c CardinalPoint) String() string {
 	return string(c)
 }
 
-func ParseCardinalPoint(raw string) (*CardinalPoint, error) {
-	cp := CardinalPoint(raw)
+func ParseCardinalPoint(raw string) (cp CardinalPoint, err error) {
+	cp = CardinalPoint(raw)
 	switch cp {
 	case NORTH, SOUTH, EAST, WEST:
-		return &cp, nil
 	default:
-		return nil, fmt.Errorf("unknow value")
+		err = fmt.Errorf("unknow value")
 	}
+	return
 }
 
 const (
@@ -38,25 +43,51 @@ type LatLong float64
 // - DMS (Degrees, Minutes, Secondes), ie: "N 31° 50' 72.38'"
 // - DD (Decimal Degree), ie: "31.8534389" "22.870216666666668"
 func NewLatLong(raw string) (l LatLong, err error) {
-	if l, err = ParseDMS(raw); err == nil {
-		return
-	}
-
-	if l, err = ParseDD(raw); err == nil {
+	if l, err = ParseDM(raw); err != nil {
 		return
 	}
 
 	if l < MIN_LATLONG_THRESHOLD || l > MAX_LATLONG_THRESHOLD {
-		return l, fmt.Errorf("invalid range (got: %f)", l)
+		err = fmt.Errorf("invalid range (got: %f)", l)
+	}
+	return
+}
+
+// ParseDM return LatLong from provided format from GPS module (in format ‘ddmm.mmmm’: degree and minutes)
+// Allowed format: "3150.7238N" or "3150.7238 N"
+// @see https://fr.wikipedia.org/wiki/Coordonn%C3%A9es_g%C3%A9ographiques
+// => 1 degree = 60 minutes
+// => 1 minute = 60 secondes
+// Example: Baltimore (United state) => latitude = 39,28° N, longitude = 76,60° O (39° 17′ N, 76° 36′ O).
+// 0.28° = (0.28°*60min)/1° = 16.8min => ~17 minutes
+func ParseDM(raw string) (LatLong, error) {
+
+	var (
+		dir CardinalPoint
+		dm  float64
+		err error
+	)
+
+	// Explode data
+	if dm, err = strconv.ParseFloat(strings.TrimSpace(string(raw[:len(raw)-2])), 64); err != nil {
+		return LatLong(0), err
 	}
 
-	return LatLong(0), fmt.Errorf("invalid format (got: %s)", raw)
-}
+	if dir, err = ParseCardinalPoint(string(raw[len(raw)-1])); err != nil {
+		return LatLong(0), err
+	}
 
-func ParseDD(raw string) (l LatLong, err error) {
-	return
-}
+	// Compute LatLong
+	d := math.Floor(dm / 100) // div dm by 100 and truncate decimal value to get only degrees
+	m := dm - (d * 100)       // Sub degrees to dm value
+	dm = d + m/60             // switch minute to degree to get value in the same referential
 
-func ParseDMS(raw string) (l LatLong, err error) {
-	return
+	switch dir {
+	case NORTH, EAST:
+		return LatLong(dm), nil
+	case SOUTH, WEST:
+		return LatLong(0 - dm), nil
+	default:
+		return 0, fmt.Errorf("Wrong direction (got: %s)", dir.String())
+	}
 }

@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kr/pretty"
@@ -48,7 +49,12 @@ func (m *GPRMC) parse() (err error) {
 
 	m.Valid = (m.Fields[1] == "A")
 
-	// TODO: Parse longitude/latitude
+	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
+		return err
+	}
+	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[4:6], " ")); err != nil {
+		return err
+	}
 
 	if m.Speed, err = strconv.ParseFloat(m.Fields[6], 64); err != nil {
 		return fmt.Errorf("Unable to parse speed from data field (got: %s)", m.Fields[6])
@@ -67,16 +73,18 @@ func (m *GPRMC) parse() (err error) {
 	}
 
 	if len(m.Fields[10]) > 0 {
-		if m.MagneticVariationIndicator, err = ParseCardinalPoint(m.Fields[10]); err != nil {
+		magneticVariationIndicator, err := ParseCardinalPoint(m.Fields[10])
+		if err != nil {
 			return fmt.Errorf("Unable to parse magnetic variation indicator from data field (got: %s)", m.Fields[10])
 		}
+		m.MagneticVariationIndicator = &magneticVariationIndicator
 	}
 
 	if m.PositionningMode, err = ParsePositionningMode(m.Fields[11]); err != nil {
 		return fmt.Errorf("Unable to parse GPS positionning mode from data field (got: %s)", m.Fields[11])
 	}
 
-	fmt.Println("GPRMC:", pretty.Sprint(m), m.DateTimeUTC.Format("2006-01-02 15H04 05s"), "\n")
+	fmt.Println("GPRMC:", pretty.Sprint(m), "\n")
 	return nil
 }
 
