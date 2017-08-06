@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/kr/pretty"
 )
 
 // Examples:
@@ -84,7 +82,6 @@ func (m *GPRMC) parse() (err error) {
 		return fmt.Errorf("Unable to parse GPS positionning mode from data field (got: %s)", m.Fields[11])
 	}
 
-	fmt.Println("GPRMC:", pretty.Sprint(m), "\n")
 	return nil
 }
 
