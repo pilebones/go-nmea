@@ -91,3 +91,10 @@ func ParseDM(raw string) (LatLong, error) {
 		return 0, fmt.Errorf("Wrong direction (got: %s)", dir.String())
 	}
 }
+
+func (l LatLong) PrintDMS() string {
+	degrees := math.Floor(float64(l))
+	minutes := math.Floor((float64(l) - degrees) * 60)
+	secondes := (float64(l) - (degrees + (minutes / 60))) * 60 * 60 // TODO: round secondes
+	return fmt.Sprintf("%d° %d' %f\"", int(degrees), int(minutes), secondes)
+}
