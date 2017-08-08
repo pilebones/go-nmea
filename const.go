@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// NMEA Special chars
 	PREFIX          = "$"
@@ -21,6 +23,34 @@ const (
 	TALKER_ID_BD          TalkerId = "BD" // BeiDou (China)
 	TALKER_ID_QZ          TalkerId = "QZ" // QZSS regional GPS augmentation system (Japan)
 )
+
+type TypeId struct {
+	Talker TalkerId
+	Code   string
+}
+
+func (t TypeId) GetTypeId() TypeId {
+	return t
+}
+
+func (t TypeId) String() string {
+	return t.Talker.String() + t.Code
+}
+
+type MtkTypeId struct {
+	TypeId
+	PacketType string
+}
+
+func (t MtkTypeId) String() string {
+	return t.TypeId.String() + t.PacketType
+}
+
+type TalkerId string
+
+func (t TalkerId) String() string {
+	return string(t)
+}
 
 // Dictionnary of all kind of NMEA message header by full-code
 var TypeIds map[string]Header
@@ -119,4 +149,40 @@ func init() {
 		"PMTK705": MtkTypeId{TypeId: TypeId{Talker: TALKER_ID_PROPRIETARY, Code: "MTK"}, PacketType: "705"}, // PMTK_DT_RELEASE
 		"PMTK869": MtkTypeId{TypeId: TypeId{Talker: TALKER_ID_PROPRIETARY, Code: "MTK"}, PacketType: "869"}, // PMTK_EASY_ENABLE
 	}
+}
+
+const (
+	Valid   RMCValid = true
+	Invalid RMCValid = false
+)
+
+type RMCValid bool
+
+func (v RMCValid) String() string {
+	if v == Valid {
+		return "A"
+	}
+	return "V"
+}
+
+const (
+	NO_FIX                PositionningMode = "N"
+	AUTONOMOUS_GNSS_FIX   PositionningMode = "A"
+	DIFFERENTIAL_GNSS_FIX PositionningMode = "D"
+)
+
+type PositionningMode string
+
+func (p PositionningMode) String() string {
+	return string(p)
+}
+
+func ParsePositionningMode(raw string) (pm PositionningMode, err error) {
+	pm = PositionningMode(raw)
+	switch pm {
+	case NO_FIX, AUTONOMOUS_GNSS_FIX, DIFFERENTIAL_GNSS_FIX:
+	default:
+		err = fmt.Errorf("unknow value")
+	}
+	return
 }

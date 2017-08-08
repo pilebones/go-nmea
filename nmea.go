@@ -17,34 +17,6 @@ type Header interface {
 	String() string
 }
 
-type TypeId struct {
-	Talker TalkerId
-	Code   string
-}
-
-func (t TypeId) GetTypeId() TypeId {
-	return t
-}
-
-func (t TypeId) String() string {
-	return t.Talker.String() + t.Code
-}
-
-type MtkTypeId struct {
-	TypeId
-	PacketType string
-}
-
-func (t MtkTypeId) String() string {
-	return t.TypeId.String() + t.PacketType
-}
-
-type TalkerId string
-
-func (t TalkerId) String() string {
-	return string(t)
-}
-
 type Message struct {
 	Type     Header
 	Fields   []string
@@ -140,6 +112,10 @@ func Parse(raw string) (NMEA, error) {
 		gprmc := NewGPRMC(*m)
 		err = gprmc.parse()
 		return gprmc, err
+	case "GPVTG":
+		gpvtg := NewGPVTG(*m)
+		err = gpvtg.parse()
+		return gpvtg, err
 	}
 
 	return m, err

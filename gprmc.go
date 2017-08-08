@@ -89,39 +89,3 @@ func (m *GPRMC) parse() (err error) {
 
 	return nil
 }
-
-const (
-	Valid   RMCValid = true
-	Invalid RMCValid = false
-)
-
-type RMCValid bool
-
-func (v RMCValid) String() string {
-	if v == Valid {
-		return "A"
-	}
-	return "V"
-}
-
-const (
-	NO_FIX                PositionningMode = "N"
-	AUTONOMOUS_GNSS_FIX   PositionningMode = "A"
-	DIFFERENTIAL_GNSS_FIX PositionningMode = "D"
-)
-
-type PositionningMode string
-
-func (p PositionningMode) String() string {
-	return string(p)
-}
-
-func ParsePositionningMode(raw string) (pm PositionningMode, err error) {
-	pm = PositionningMode(raw)
-	switch pm {
-	case NO_FIX, AUTONOMOUS_GNSS_FIX, DIFFERENTIAL_GNSS_FIX:
-	default:
-		err = fmt.Errorf("unknow value")
-	}
-	return
-}
