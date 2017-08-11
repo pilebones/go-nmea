@@ -116,6 +116,10 @@ func Parse(raw string) (NMEA, error) {
 		gpvtg := NewGPVTG(*m)
 		err = gpvtg.parse()
 		return gpvtg, err
+	case "GPGGA":
+		gpgga := NewGPGGA(*m)
+		err = gpgga.parse()
+		return gpgga, err
 	}
 
 	return m, err

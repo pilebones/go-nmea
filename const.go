@@ -1,6 +1,9 @@
 package nmea
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 const (
 	// NMEA Special chars
@@ -152,13 +155,13 @@ func init() {
 }
 
 const (
-	Valid   RMCValid = true
-	Invalid RMCValid = false
+	Valid   DataValid = true
+	Invalid DataValid = false
 )
 
-type RMCValid bool
+type DataValid bool
 
-func (v RMCValid) String() string {
+func (v DataValid) String() string {
 	if v == Valid {
 		return "A"
 	}
@@ -181,6 +184,43 @@ func ParsePositionningMode(raw string) (pm PositionningMode, err error) {
 	pm = PositionningMode(raw)
 	switch pm {
 	case NO_FIX, AUTONOMOUS_GNSS_FIX, DIFFERENTIAL_GNSS_FIX:
+	default:
+		err = fmt.Errorf("unknow value")
+	}
+	return
+}
+
+const (
+	FIX_STATUS_INVALID = iota
+	FIX_STATUS_GNSSS
+	FIX_STATUS_DGPS
+)
+
+type FixStatus int
+
+func (s FixStatus) String() string {
+	switch s {
+	case 0:
+		return "invalid"
+	case 1:
+		return "GNSS fix"
+	case 2:
+		return "DGPS fix"
+	default:
+		return "unknow"
+
+	}
+}
+
+func ParseFixStatus(raw string) (fs FixStatus, err error) {
+	i, err := strconv.ParseInt(raw, 10, 0)
+	if err != nil {
+		return
+	}
+
+	fs = FixStatus(i)
+	switch fs {
+	case FIX_STATUS_INVALID, FIX_STATUS_GNSSS, FIX_STATUS_DGPS:
 	default:
 		err = fmt.Errorf("unknow value")
 	}

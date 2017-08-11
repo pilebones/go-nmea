@@ -19,4 +19,5 @@ The following list will be expanded to decode new types, but now the library can
 
 * $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
 * $GPVTG - Track Made Good and Ground Speed
+* $GPGGA - Global Positioning System Fix Data
 

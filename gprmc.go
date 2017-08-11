@@ -21,7 +21,7 @@ type GPRMC struct {
 	Message
 
 	DateTimeUTC       time.Time // Aggregation of TimeUTC+Date data field
-	Valid             RMCValid  // 'V' =Invalid / 'A' = Valid
+	IsValid           DataValid // 'V' =Invalid / 'A' = Valid
 	Latitude          LatLong   // In decimal format
 	Longitude         LatLong   // In decimal format
 	Speed             float64   // Speed over ground in knots
@@ -44,7 +44,7 @@ func (m *GPRMC) parse() (err error) {
 		return fmt.Errorf("Unable to parse datetime UTC from data field (got: %s)", datetime)
 	}
 
-	m.Valid = (m.Fields[1] == "A")
+	m.IsValid = (m.Fields[1] == "A")
 
 	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
 		return err
