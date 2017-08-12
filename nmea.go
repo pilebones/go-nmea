@@ -120,6 +120,10 @@ func Parse(raw string) (NMEA, error) {
 		gpgga := NewGPGGA(*m)
 		err = gpgga.parse()
 		return gpgga, err
+	case "GPGSA":
+		gpgsa := NewGPGSA(*m)
+		err = gpgsa.parse()
+		return gpgsa, err
 	}
 
 	return m, err

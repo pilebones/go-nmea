@@ -75,7 +75,7 @@ func TestNMEAMessage(t *testing.T) {
 			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.GetMessage().String())
 		}
 
-		if msg.GetMessage().Type.String() == "GPGGA" {
+		if msg.GetMessage().Type.String() == "GPGSA" {
 			fmt.Println("Message:", pretty.Sprint(msg))
 		}
 	}

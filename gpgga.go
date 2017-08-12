@@ -20,13 +20,15 @@ type GPGGA struct {
 	TimeUTC            time.Time // Aggregation of TimeUTC data field
 	Latitude           LatLong   // In decimal format
 	Longitude          LatLong   // In decimal format
-	FixStatus          FixStatus
+	QualityIndicator   QualityIndicator
 	NbOfSatellitesUsed uint64
 	HDOP               float64
 	Altitude           float64
 	GeoIdSep           float64
-	DGPSAge            *uint64
-	DGPSiStationId     *string
+
+	// FIXME: Manage field below when I found a sample with no-empty data
+	// DGPSAge        *uint64
+	// DGPSiStationId *string
 }
 
 func (m *GPGGA) GetMessage() *Message { // Implement NMEA interface
@@ -57,7 +59,7 @@ func (m *GPGGA) parse() (err error) {
 		return err
 	}
 
-	if m.FixStatus, err = ParseFixStatus(m.Fields[5]); err != nil {
+	if m.QualityIndicator, err = ParseQualityIndicator(m.Fields[5]); err != nil {
 		return err
 	}
 
@@ -77,4 +79,41 @@ func (m *GPGGA) parse() (err error) {
 	}
 
 	return nil
+}
+
+const (
+	QUALITY_INDICATOR_INVALID = iota
+	QUALITY_INDICATOR_GNSSS
+	QUALITY_INDICATOR_DGPS
+)
+
+type QualityIndicator int
+
+func (s QualityIndicator) String() string {
+	switch s {
+	case QUALITY_INDICATOR_INVALID:
+		return "invalid"
+	case QUALITY_INDICATOR_GNSSS:
+		return "GNSS fix"
+	case QUALITY_INDICATOR_DGPS:
+		return "DGPS fix"
+	default:
+		return "unknow"
+
+	}
+}
+
+func ParseQualityIndicator(raw string) (qi QualityIndicator, err error) {
+	i, err := strconv.ParseInt(raw, 10, 0)
+	if err != nil {
+		return
+	}
+
+	qi = QualityIndicator(i)
+	switch qi {
+	case QUALITY_INDICATOR_INVALID, QUALITY_INDICATOR_GNSSS, QUALITY_INDICATOR_DGPS:
+	default:
+		err = fmt.Errorf("unknow value")
+	}
+	return
 }
