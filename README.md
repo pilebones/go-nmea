@@ -14,7 +14,7 @@ Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
 
 ## Supported NMEA message
 
-_/!\ Work in progress, not a stable release /!\_
+__/!\ Work in progress, not a stable release /!\__
 
 The following list will be expanded to decode new types, but now the library can decode only :
 
