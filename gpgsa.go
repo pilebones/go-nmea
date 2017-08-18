@@ -15,8 +15,10 @@ func NewGPGSA(m Message) *GPGSA {
 type GPGSA struct {
 	Message
 
-	Mode      Mode
-	FixStatus FixStatus
+	Mode                   Mode
+	FixStatus              FixStatus
+	SatelliteUsedOnChannel [13]int // Note: index 0 not used (channel 1..12)
+	PDOP, HDOP, VDOP       float64
 }
 
 func (m *GPGSA) GetMessage() *Message { // Implement NMEA interface
@@ -34,6 +36,22 @@ func (m *GPGSA) parse() (err error) {
 
 	if m.FixStatus, err = ParseFixStatus(m.Fields[1]); err != nil {
 		return
+	}
+
+	for k, v := range m.Fields[2:14] {
+		m.SatelliteUsedOnChannel[k+1], _ = strconv.Atoi(v)
+	}
+
+	if m.PDOP, err = strconv.ParseFloat(m.Fields[14], 64); err != nil {
+		return err
+	}
+
+	if m.HDOP, err = strconv.ParseFloat(m.Fields[15], 64); err != nil {
+		return err
+	}
+
+	if m.VDOP, err = strconv.ParseFloat(m.Fields[16], 64); err != nil {
+		return err
 	}
 
 	return nil
