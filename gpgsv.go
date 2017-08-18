@@ -1,6 +1,9 @@
 package nmea
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 // Examples:
 // $GPGSV,3,1,12,01,05,060,18,02,17,259,43,04,56,287,28,09,08,277,28*77
@@ -18,12 +21,31 @@ type Satellite struct {
 	SNR       *int // Signal to Noise Ration in dBHz (0 ~ 99), empty if not tracking
 }
 
+func newSatelliteFromFields(f []string) (s Satellite, err error) {
+	if len(f) < 4 {
+		return s, fmt.Errorf("Not enought fields for create satellite")
+	}
+
+	s.Id = f[0]
+	s.Elevation, err = strconv.Atoi(f[1])
+	s.Azimuth, err = strconv.Atoi(f[2])
+
+	if f[3] != "" {
+		var snr int
+		if snr, err = strconv.Atoi(f[3]); err != nil {
+			return
+		}
+		s.SNR = &snr
+	}
+	return
+}
+
 type GPGSV struct {
 	Message
 	NbOfMessage      int // Number of messages, total number of GPGSV messages being output (1 ~ 3)
 	SequenceNumber   int // Sequence number of this entry (1 ~ 3)
 	SatellitesInView int
-	Satellites       [3]Satellite
+	Satellites       [4]Satellite
 }
 
 func (m *GPGSV) GetMessage() *Message { // Implement NMEA interface
@@ -53,6 +75,16 @@ func (m *GPGSV) parse() (err error) {
 
 	if m.SatellitesInView, err = strconv.Atoi(m.Fields[2]); err != nil {
 		return
+	}
+
+	offset := 3
+	padding := 4
+
+	for k := range m.Satellites {
+		if m.Satellites[k], err = newSatelliteFromFields(m.Fields[offset : offset+padding]); err != nil {
+			return
+		}
+		offset += padding
 	}
 
 	return nil
