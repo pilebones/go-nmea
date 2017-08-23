@@ -158,7 +158,7 @@ const (
 
 type DataValid bool
 
-func (v DataValid) String() string {
+func (v DataValid) Serialize() string {
 	if v == Valid {
 		return "A"
 	}
@@ -181,6 +181,40 @@ func ParsePositioningMode(raw string) (pm PositioningMode, err error) {
 	pm = PositioningMode(raw)
 	switch pm {
 	case NO_FIX, AUTONOMOUS_GNSS_FIX, DIFFERENTIAL_GNSS_FIX:
+	default:
+		err = fmt.Errorf("unknow value")
+	}
+	return
+}
+
+const (
+	ERROR   Severity = "00"
+	WARNING Severity = "01"
+	NOTICE  Severity = "02"
+	USER    Severity = "07"
+)
+
+type Severity string
+
+func (s Severity) String() string {
+	switch s {
+	case ERROR:
+		return "ERROR"
+	case WARNING:
+		return "WARNING"
+	case NOTICE:
+		return "NOTICE"
+	case USER:
+		return "USER"
+	default:
+		return "unknow"
+	}
+}
+
+func ParseSeverity(raw string) (s Severity, err error) {
+	s = Severity(raw)
+	switch s {
+	case ERROR, WARNING, NOTICE, USER:
 	default:
 		err = fmt.Errorf("unknow value")
 	}

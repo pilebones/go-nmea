@@ -1,11 +1,6 @@
 package nmea
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/kr/pretty"
-)
+import "testing"
 
 func TestNMEAMessage(t *testing.T) {
 
@@ -73,10 +68,6 @@ func TestNMEAMessage(t *testing.T) {
 		// Check bijectivity of parse/serialization process
 		if msg.GetMessage().String() != raw {
 			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.GetMessage().String())
-		}
-
-		if msg.GetMessage().Type.String() == "GPGLL" {
-			fmt.Println("Message:", pretty.Sprint(msg))
 		}
 	}
 }

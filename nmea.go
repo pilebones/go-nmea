@@ -133,6 +133,10 @@ func Parse(raw string) (NMEA, error) {
 		gpgll := NewGPGLL(*m)
 		err = gpgll.parse()
 		return gpgll, err
+	case "GPTXT":
+		gptxt := NewGPTXT(*m)
+		err = gptxt.parse()
+		return gptxt, err
 	}
 
 	return m, err
