@@ -23,4 +23,4 @@ The following list will be expanded to decode new types, but now the library can
 * $GPGGA - Global Positioning System Fix Data
 * $GPGSA - GPS DOP and active satellites
 * $GPGSV - GPS Satellites in view
-
+* $GPGLL - Geographic position, latitude / longitude

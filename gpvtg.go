@@ -15,10 +15,10 @@ func NewGPVTG(m Message) *GPVTG {
 type GPVTG struct {
 	Message
 
-	COG              float64 // Course over ground (true) in degree
-	SpeedKnots       float64 // Speed over ground in knots
-	SpeedKmh         float64 // Speed over ground in km/h
-	PositionningMode PositionningMode
+	COG             float64 // Course over ground (true) in degree
+	SpeedKnots      float64 // Speed over ground in knots
+	SpeedKmh        float64 // Speed over ground in km/h
+	PositioningMode PositioningMode
 }
 
 func (m *GPVTG) GetMessage() *Message { // Implement NMEA interface
@@ -49,8 +49,8 @@ func (m *GPVTG) parse() (err error) {
 		return fmt.Errorf("Unable to parse speed from data field (got: %s)", m.Fields[6])
 	}
 
-	if m.PositionningMode, err = ParsePositionningMode(m.Fields[8]); err != nil {
-		return fmt.Errorf("Unable to parse GPS positionning mode from data field (got: %s)", m.Fields[8])
+	if m.PositioningMode, err = ParsePositioningMode(m.Fields[8]); err != nil {
+		return fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[8])
 	}
 
 	return nil

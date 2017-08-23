@@ -27,7 +27,7 @@ type GPRMC struct {
 	Speed             float64   // Speed over ground in knots
 	COG               float64   // Course over ground in degree
 	MagneticVariation float64   // Magnetic variation in degree, not being output
-	PositionningMode  PositionningMode
+	PositioningMode   PositioningMode
 }
 
 func (m *GPRMC) GetMessage() *Message { // Implement NMEA interface
@@ -83,8 +83,8 @@ func (m *GPRMC) parse() (err error) {
 		}
 	}
 
-	if m.PositionningMode, err = ParsePositionningMode(m.Fields[11]); err != nil {
-		return fmt.Errorf("Unable to parse GPS positionning mode from data field (got: %s)", m.Fields[11])
+	if m.PositioningMode, err = ParsePositioningMode(m.Fields[11]); err != nil {
+		return fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[11])
 	}
 
 	return nil

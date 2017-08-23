@@ -166,19 +166,19 @@ func (v DataValid) String() string {
 }
 
 const (
-	NO_FIX                PositionningMode = "N"
-	AUTONOMOUS_GNSS_FIX   PositionningMode = "A"
-	DIFFERENTIAL_GNSS_FIX PositionningMode = "D"
+	NO_FIX                PositioningMode = "N"
+	AUTONOMOUS_GNSS_FIX   PositioningMode = "A"
+	DIFFERENTIAL_GNSS_FIX PositioningMode = "D"
 )
 
-type PositionningMode string
+type PositioningMode string
 
-func (p PositionningMode) String() string {
+func (p PositioningMode) String() string {
 	return string(p)
 }
 
-func ParsePositionningMode(raw string) (pm PositionningMode, err error) {
-	pm = PositionningMode(raw)
+func ParsePositioningMode(raw string) (pm PositioningMode, err error) {
+	pm = PositioningMode(raw)
 	switch pm {
 	case NO_FIX, AUTONOMOUS_GNSS_FIX, DIFFERENTIAL_GNSS_FIX:
 	default:

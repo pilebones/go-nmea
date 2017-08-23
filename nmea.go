@@ -9,6 +9,7 @@ import (
 // Interface for each kind of NMEA message
 type NMEA interface {
 	GetMessage() *Message
+	// TODO: Serialize() []byte
 }
 
 // Interface for each kind of NMEA header according to TalkerId
@@ -128,6 +129,10 @@ func Parse(raw string) (NMEA, error) {
 		gpgsv := NewGPGSV(*m)
 		err = gpgsv.parse()
 		return gpgsv, err
+	case "GPGLL":
+		gpgll := NewGPGLL(*m)
+		err = gpgll.parse()
+		return gpgll, err
 	}
 
 	return m, err
