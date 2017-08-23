@@ -9,13 +9,13 @@ import (
 // Interface for each kind of NMEA message
 type NMEA interface {
 	GetMessage() *Message
-	// TODO: Serialize() []byte
+	Serialize() string
 }
 
 // Interface for each kind of NMEA header according to TalkerId
 type Header interface {
 	GetTypeId() TypeId
-	String() string
+	Serialize() string
 }
 
 type Message struct {
@@ -29,7 +29,7 @@ func (m *Message) GetMessage() *Message {
 }
 
 // Serialize message to render raw
-func (m Message) String() string {
+func (m Message) Serialize() string {
 	output := PREFIX + m.Payload() + SUFFIX
 	checksum := fmt.Sprintf("%X", m.Checksum)
 	if len(checksum) == 1 {
@@ -41,9 +41,9 @@ func (m Message) String() string {
 // Payload return data after $ and before *
 func (m Message) Payload() string {
 	if f := strings.Join(m.Fields, FIELD_DELIMITER); len(f) > 0 {
-		return m.Type.String() + FIELD_DELIMITER + strings.Join(m.Fields, FIELD_DELIMITER)
+		return m.Type.Serialize() + FIELD_DELIMITER + strings.Join(m.Fields, FIELD_DELIMITER)
 	}
-	return m.Type.String()
+	return m.Type.Serialize()
 }
 
 // ComputeChecksum recompute checksum from extracted payload
@@ -108,7 +108,7 @@ func Parse(raw string) (NMEA, error) {
 		return nil, err
 	}
 
-	switch m.Type.String() {
+	switch m.Type.Serialize() {
 	case "GPRMC":
 		gprmc := NewGPRMC(*m)
 		err = gprmc.parse()

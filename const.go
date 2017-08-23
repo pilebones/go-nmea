@@ -33,8 +33,8 @@ func (t TypeId) GetTypeId() TypeId {
 	return t
 }
 
-func (t TypeId) String() string {
-	return t.Talker.String() + t.Code
+func (t TypeId) Serialize() string {
+	return t.Talker.Serialize() + t.Code
 }
 
 type MtkTypeId struct {
@@ -42,13 +42,13 @@ type MtkTypeId struct {
 	PacketType string
 }
 
-func (t MtkTypeId) String() string {
-	return t.TypeId.String() + t.PacketType
+func (t MtkTypeId) Serialize() string {
+	return t.TypeId.Serialize() + t.PacketType
 }
 
 type TalkerId string
 
-func (t TalkerId) String() string {
+func (t TalkerId) Serialize() string {
 	return string(t)
 }
 
@@ -173,8 +173,21 @@ const (
 
 type PositioningMode string
 
-func (p PositioningMode) String() string {
+func (p PositioningMode) Serialize() string {
 	return string(p)
+}
+
+func (p PositioningMode) String() string {
+	switch p {
+	case NO_FIX:
+		return "No fix"
+	case AUTONOMOUS_GNSS_FIX:
+		return "Autonomous GNSS fix"
+	case DIFFERENTIAL_GNSS_FIX:
+		return "Differential GNSS fix"
+	default:
+		return "unknow"
+	}
 }
 
 func ParsePositioningMode(raw string) (pm PositioningMode, err error) {
@@ -195,6 +208,10 @@ const (
 )
 
 type Severity string
+
+func (s Severity) Serialize() string {
+	return string(s)
+}
 
 func (s Severity) String() string {
 	switch s {

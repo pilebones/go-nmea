@@ -55,3 +55,28 @@ func (m *GPTXT) parse() (err error) {
 
 	return nil
 }
+
+func (m GPTXT) Serialize() string { // Implement NMEA interface
+
+	hdr := TypeIds["GPTXT"]
+	fields := make([]string, 0)
+
+	if m.TotalNbMsgInTx < 10 {
+		fields = append(fields, fmt.Sprintf("0%d", m.TotalNbMsgInTx))
+	} else {
+		fields = append(fields, fmt.Sprintf("%d", m.TotalNbMsgInTx))
+	}
+
+	if m.MsgNumInTx < 10 {
+		fields = append(fields, fmt.Sprintf("0%d", m.MsgNumInTx))
+	} else {
+		fields = append(fields, fmt.Sprintf("%d", m.MsgNumInTx))
+	}
+
+	fields = append(fields, m.Severity.Serialize(), m.TxtMsg)
+
+	msg := Message{Type: hdr, Fields: fields}
+	msg.Checksum = msg.ComputeChecksum()
+
+	return msg.Serialize()
+}

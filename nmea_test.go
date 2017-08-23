@@ -66,8 +66,8 @@ func TestNMEAMessage(t *testing.T) {
 		}
 
 		// Check bijectivity of parse/serialization process
-		if msg.GetMessage().String() != raw {
-			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.GetMessage().String())
+		if msg.Serialize() != raw {
+			t.Fatalf("Unable to serialize \"%s\" (got: \"%s\")", raw, msg.Serialize())
 		}
 	}
 }
