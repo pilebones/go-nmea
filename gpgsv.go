@@ -27,8 +27,13 @@ func newSatelliteFromFields(f []string) (s Satellite, err error) {
 	}
 
 	s.Id = f[0]
-	s.Elevation, err = strconv.Atoi(f[1])
-	s.Azimuth, err = strconv.Atoi(f[2])
+	if s.Elevation, err = strconv.Atoi(f[1]); err != nil {
+		return
+	}
+
+	if s.Azimuth, err = strconv.Atoi(f[2]); err != nil {
+		return
+	}
 
 	if f[3] != "" {
 		var snr int
@@ -88,4 +93,38 @@ func (m *GPGSV) parse() (err error) {
 	}
 
 	return nil
+}
+
+func (m *GPGSV) Serialize() string { // Implement NMEA interface
+	hdr := TypeIds["GPGSV"]
+	fields := make([]string, 0)
+
+	fields = append(fields, strconv.Itoa(m.NbOfMessage), strconv.Itoa(m.SequenceNumber), strconv.Itoa(m.SatellitesInView))
+
+	for _, s := range m.Satellites {
+		fields = append(fields, s.Id)
+
+		if s.Elevation < 10 {
+			fields = append(fields, "0"+strconv.Itoa(s.Elevation))
+		} else {
+			fields = append(fields, strconv.Itoa(s.Elevation))
+		}
+
+		if s.Azimuth < 100 {
+			fields = append(fields, "0"+strconv.Itoa(s.Azimuth))
+		} else {
+			fields = append(fields, strconv.Itoa(s.Azimuth))
+		}
+
+		if s.SNR == nil {
+			fields = append(fields, "")
+		} else {
+			fields = append(fields, strconv.Itoa(*s.SNR))
+		}
+	}
+
+	msg := Message{Type: hdr, Fields: fields}
+	msg.Checksum = msg.ComputeChecksum()
+
+	return msg.Serialize()
 }
