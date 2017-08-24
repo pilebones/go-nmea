@@ -14,7 +14,7 @@ Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
 
 ## Supported NMEA message
 
-__/!\ Work in progress, not a stable release /!\__
+__/!\ Work in progress /!\__
 
 The following list will be expanded to decode new types, but now the library can decode only :
 
@@ -24,3 +24,30 @@ The following list will be expanded to decode new types, but now the library can
 * $GPGSA - GPS DOP and active satellites
 * $GPGSV - GPS Satellites in view
 * $GPGLL - Geographic position, latitude / longitude
+* $GPTXT - Transfert various text information
+
+## Usage
+
+Library for parsing (read) or serialize (write) NMEA packets (bijective handling), see below:
+
+```go
+package main
+
+import "fmt"
+import nmea "github.com/pilebones/go-nmea"
+
+func main() {
+	raw := "$GPGGA,015540.000,3150.68378,N,11711.93139,E,1,17,0.6,0051.6,M,0.0,M,,*58"
+	
+	fmt.Println("Parsing NMEA message:", raw)
+	msg, err := nmea.Parse(raw)
+	if err != nil {
+		fmt.Println("Unable to decode nmea message, err:", err.Error())
+		return
+	}
+
+	// TODO: Handling complex struct depending on kind of nmea message
+
+	fmt.Println("Craft NMEA packets using Serialize():", msg.Serialize())
+}
+```
