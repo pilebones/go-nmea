@@ -104,6 +104,9 @@ func (m *Message) parse(data string) (err error) {
 func Parse(raw string) (NMEA, error) {
 	var err error
 	m := &Message{}
+
+	raw = strings.TrimRight(raw, "\n") // Remove residual CRLF chars
+
 	if err = m.parse(raw); err != nil {
 		return nil, err
 	}
