@@ -9,6 +9,7 @@ import (
 // Interface for each kind of NMEA message
 type NMEA interface {
 	GetMessage() *Message
+	Error(err error) error
 	Serialize() string
 }
 
@@ -28,6 +29,10 @@ func (m *Message) GetMessage() *Message {
 	return m
 }
 
+func (m *Message) Error(err error) error {
+	return fmt.Errorf("[%s] %s (with payload: %s)", m.Type.Serialize(), err.Error(), strings.Join(m.Fields, FIELD_DELIMITER))
+}
+
 // Serialize message to render raw
 func (m Message) Serialize() string {
 	output := PREFIX + m.Payload() + SUFFIX
@@ -41,7 +46,7 @@ func (m Message) Serialize() string {
 // Payload return data after $ and before *
 func (m Message) Payload() string {
 	if f := strings.Join(m.Fields, FIELD_DELIMITER); len(f) > 0 {
-		return m.Type.Serialize() + FIELD_DELIMITER + strings.Join(m.Fields, FIELD_DELIMITER)
+		return m.Type.Serialize() + FIELD_DELIMITER + f
 	}
 	return m.Type.Serialize()
 }

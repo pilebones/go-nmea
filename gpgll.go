@@ -28,24 +28,24 @@ func (m *GPGLL) GetMessage() *Message { // Implement NMEA interface
 
 func (m *GPGLL) parse() (err error) {
 	if len(m.Fields) != 7 {
-		return fmt.Errorf("Incomplete GPGLL message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 7)
+		return m.Error(fmt.Errorf("Incomplete GPGLL message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 7))
 	}
 
 	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[0:2], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.TimeUTC, err = time.Parse("150405.000", m.Fields[4]); err != nil {
-		return fmt.Errorf("Unable to parse time UTC from data field (got: %s)", m.Fields[4])
+		return m.Error(fmt.Errorf("Unable to parse time UTC from data field (got: %s)", m.Fields[4]))
 	}
 
 	m.IsValid = (m.Fields[5] == "A")
 
 	if m.PositioningMode, err = ParsePositioningMode(m.Fields[6]); err != nil {
-		return fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[6])
+		return m.Error(fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[6]))
 	}
 
 	return nil

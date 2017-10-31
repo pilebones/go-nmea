@@ -59,27 +59,27 @@ func (m *GPGSV) GetMessage() *Message { // Implement NMEA interface
 
 func (m *GPGSV) parse() (err error) {
 	if len(m.Fields) != 19 {
-		return fmt.Errorf("Incomplete GPGSV message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 19)
+		return m.Error(fmt.Errorf("Incomplete GPGSV message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 19))
 	}
 
 	if m.NbOfMessage, err = strconv.Atoi(m.Fields[0]); err != nil {
-		return
+		return m.Error(err)
 	}
 
 	if m.NbOfMessage < 1 || m.NbOfMessage > 3 {
-		return fmt.Errorf("GPGSV number of messages out of range (got: %d)", m.NbOfMessage)
+		return m.Error(fmt.Errorf("GPGSV number of messages out of range (got: %d)", m.NbOfMessage))
 	}
 
 	if m.SequenceNumber, err = strconv.Atoi(m.Fields[1]); err != nil {
-		return
+		return m.Error(err)
 	}
 
 	if m.SequenceNumber < 1 || m.SequenceNumber > 3 {
-		return fmt.Errorf("GPGSV sequence number out of range (got: %d)", m.SequenceNumber)
+		return m.Error(fmt.Errorf("GPGSV sequence number out of range (got: %d)", m.SequenceNumber))
 	}
 
 	if m.SatellitesInView, err = strconv.Atoi(m.Fields[2]); err != nil {
-		return
+		return m.Error(err)
 	}
 
 	offset := 3

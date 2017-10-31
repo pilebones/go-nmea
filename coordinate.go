@@ -43,6 +43,12 @@ type LatLong float64
 // - DMS (Degrees, Minutes, Secondes), ie: "N 31° 50' 72.38'"
 // - DD (Decimal Degree), ie: "31.8534389" "22.870216666666668"
 func NewLatLong(raw string) (l LatLong, err error) {
+
+	if strings.TrimSpace(raw) == "" {
+		err = fmt.Errorf("Invalid LatLong, can't be empty")
+		return
+	}
+
 	if l, err = ParseDM(raw); err != nil {
 		return
 	}
@@ -67,6 +73,10 @@ func ParseDM(raw string) (LatLong, error) {
 		dm  float64
 		err error
 	)
+
+	if len(raw) < 2 {
+		return LatLong(0), fmt.Errorf("Wrong DM format, got: \"%s\"", string(raw))
+	}
 
 	// Explode data
 	if dm, err = strconv.ParseFloat(strings.TrimSpace(string(raw[:len(raw)-2])), 64); err != nil {

@@ -48,34 +48,34 @@ func (m *GPGGA) parse() (err error) {
 	}
 
 	if m.TimeUTC, err = time.Parse("150405.000", m.Fields[0]); err != nil {
-		return fmt.Errorf("Unable to parse time UTC from data field (got: %s)", m.Fields[0])
+		return m.Error(fmt.Errorf("Unable to parse time UTC from data field (got: %s)", m.Fields[0]))
 	}
 
 	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[1:3], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[3:5], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.QualityIndicator, err = ParseQualityIndicator(m.Fields[5]); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.NbOfSatellitesUsed, err = strconv.ParseUint(m.Fields[6], 10, 0); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.HDOP, err = strconv.ParseFloat(m.Fields[7], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 	if m.Altitude, err = strconv.ParseFloat(m.Fields[8], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.GeoIdSep, err = strconv.ParseFloat(m.Fields[10], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	return nil

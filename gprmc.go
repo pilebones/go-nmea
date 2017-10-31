@@ -36,40 +36,40 @@ func (m *GPRMC) GetMessage() *Message { // Implement NMEA interface
 
 func (m *GPRMC) parse() (err error) {
 	if len(m.Fields) != 12 {
-		return fmt.Errorf("Incomplete GPRMC message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 12)
+		return m.Error(fmt.Errorf("Incomplete GPRMC message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 12))
 	}
 
 	datetime := fmt.Sprintf("%s %s", m.Fields[8], m.Fields[0])
 	if m.DateTimeUTC, err = time.Parse("020106 150405.000", datetime); err != nil {
-		return fmt.Errorf("Unable to parse datetime UTC from data field (got: %s)", datetime)
+		return m.Error(fmt.Errorf("Unable to parse datetime UTC from data field (got: %s)", datetime))
 	}
 
 	m.IsValid = (m.Fields[1] == "A")
 
 	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[4:6], " ")); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.Speed, err = strconv.ParseFloat(m.Fields[6], 64); err != nil {
-		return fmt.Errorf("Unable to parse speed from data field (got: %s)", m.Fields[6])
+		return m.Error(fmt.Errorf("Unable to parse speed from data field (got: %s)", m.Fields[6]))
 	}
 
 	if m.COG, err = strconv.ParseFloat(m.Fields[7], 64); err != nil {
-		return fmt.Errorf("Unable to parse course over ground from data field (got: %s)", m.Fields[7])
+		return m.Error(fmt.Errorf("Unable to parse course over ground from data field (got: %s)", m.Fields[7]))
 	}
 
 	if len(m.Fields[9]) > 0 {
 		if m.MagneticVariation, err = strconv.ParseFloat(m.Fields[9], 64); err != nil {
-			return fmt.Errorf("Unable to parse magnetic variation from data field (got: %s)", m.Fields[9])
+			return m.Error(fmt.Errorf("Unable to parse magnetic variation from data field (got: %s)", m.Fields[9]))
 		}
 
 		if len(m.Fields[10]) > 0 {
 			magneticVariationDir, err := ParseCardinalPoint(m.Fields[10])
 			if err != nil {
-				return fmt.Errorf("Unable to parse magnetic variation indicator from data field (got: %s)", m.Fields[10])
+				return m.Error(fmt.Errorf("Unable to parse magnetic variation indicator from data field (got: %s)", m.Fields[10]))
 			}
 
 			switch magneticVariationDir {
@@ -78,13 +78,13 @@ func (m *GPRMC) parse() (err error) {
 			case EAST:
 				// Allowed direction
 			default:
-				return fmt.Errorf("Wrong magnetic variation direction (got: %s)", m.Fields[10])
+				return m.Error(fmt.Errorf("Wrong magnetic variation direction (got: %s)", m.Fields[10]))
 			}
 		}
 	}
 
 	if m.PositioningMode, err = ParsePositioningMode(m.Fields[11]); err != nil {
-		return fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[11])
+		return m.Error(fmt.Errorf("Unable to parse GPS positioning mode from data field (got: %s)", m.Fields[11]))
 	}
 
 	return nil

@@ -27,15 +27,15 @@ func (m *GPGSA) GetMessage() *Message { // Implement NMEA interface
 
 func (m *GPGSA) parse() (err error) {
 	if len(m.Fields) != 17 {
-		return fmt.Errorf("Incomplete GPGSA message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 17)
+		return m.Error(fmt.Errorf("Incomplete GPGSA message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 17))
 	}
 
 	if m.Mode, err = ParseMode(m.Fields[0]); err != nil {
-		return
+		return m.Error(err)
 	}
 
 	if m.FixStatus, err = ParseFixStatus(m.Fields[1]); err != nil {
-		return
+		return m.Error(err)
 	}
 
 	for k, v := range m.Fields[2:14] {
@@ -43,15 +43,15 @@ func (m *GPGSA) parse() (err error) {
 	}
 
 	if m.PDOP, err = strconv.ParseFloat(m.Fields[14], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.HDOP, err = strconv.ParseFloat(m.Fields[15], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	if m.VDOP, err = strconv.ParseFloat(m.Fields[16], 64); err != nil {
-		return err
+		return m.Error(err)
 	}
 
 	return nil

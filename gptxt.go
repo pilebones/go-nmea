@@ -36,19 +36,19 @@ func (m *GPTXT) GetMessage() *Message { // Implement NMEA interface
 
 func (m *GPTXT) parse() (err error) {
 	if len(m.Fields) != 4 {
-		return fmt.Errorf("Incomplete GPTXT message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 4)
+		return m.Error(fmt.Errorf("Incomplete GPTXT message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 4))
 	}
 
 	if m.TotalNbMsgInTx, err = strconv.Atoi(m.Fields[0]); err != nil {
-		return fmt.Errorf("Unable to parse total number of messages in this transmission from data field (got: %s)", m.Fields[0])
+		return m.Error(fmt.Errorf("Unable to parse total number of messages in this transmission from data field (got: %s)", m.Fields[0]))
 	}
 
 	if m.MsgNumInTx, err = strconv.Atoi(m.Fields[1]); err != nil {
-		return fmt.Errorf("Unable to parse message number in this transmission from data field (got: %s)", m.Fields[1])
+		return m.Error(fmt.Errorf("Unable to parse message number in this transmission from data field (got: %s)", m.Fields[1]))
 	}
 
 	if m.Severity, err = ParseSeverity(m.Fields[2]); err != nil {
-		return fmt.Errorf("Unable to parse message severity from data field (got: %s)", m.Fields[2])
+		return m.Error(fmt.Errorf("Unable to parse message severity from data field (got: %s)", m.Fields[2]))
 	}
 
 	m.TxtMsg = strings.Join(m.Fields[3:], " ")
