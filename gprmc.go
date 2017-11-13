@@ -42,11 +42,15 @@ func (m *GPRMC) parse() (err error) {
 
 	m.IsValid = (m.Fields[1] == "A")
 
-	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
-		return m.Error(err)
+	if latitude := strings.TrimSpace(strings.Join(m.Fields[2:4], " ")); len(latitude) > 0 {
+		if m.Latitude, err = NewLatLong(latitude); err != nil {
+			return m.Error(err)
+		}
 	}
-	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[4:6], " ")); err != nil {
-		return m.Error(err)
+	if longitude := strings.TrimSpace(strings.Join(m.Fields[4:6], " ")); len(longitude) > 0 {
+		if m.Longitude, err = NewLatLong(longitude); err != nil {
+			return m.Error(err)
+		}
 	}
 
 	if m.Speed, err = strconv.ParseFloat(m.Fields[6], 64); err != nil {

@@ -38,16 +38,25 @@ func (m *GPGSA) parse() (err error) {
 		m.SatelliteUsedOnChannel[k+1], _ = strconv.Atoi(v)
 	}
 
-	if m.PDOP, err = strconv.ParseFloat(m.Fields[14], 64); err != nil {
-		return m.Error(err)
+	// data could be empty
+	pdop, hdop, vdop := m.Fields[14], m.Fields[15], m.Fields[16]
+
+	if len(pdop) > 0 {
+		if m.PDOP, err = strconv.ParseFloat(pdop, 64); err != nil {
+			return m.Error(err)
+		}
 	}
 
-	if m.HDOP, err = strconv.ParseFloat(m.Fields[15], 64); err != nil {
-		return m.Error(err)
+	if len(hdop) > 0 {
+		if m.HDOP, err = strconv.ParseFloat(hdop, 64); err != nil {
+			return m.Error(err)
+		}
 	}
 
-	if m.VDOP, err = strconv.ParseFloat(m.Fields[16], 64); err != nil {
-		return m.Error(err)
+	if len(vdop) > 0 {
+		if m.VDOP, err = strconv.ParseFloat(vdop, 64); err != nil {
+			return m.Error(err)
+		}
 	}
 
 	return nil

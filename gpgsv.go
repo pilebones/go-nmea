@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // Examples:
@@ -27,21 +28,27 @@ func newSatelliteFromFields(f []string) (s Satellite, err error) {
 	}
 
 	s.Id = f[0]
-	if s.Elevation, err = strconv.Atoi(f[1]); err != nil {
-		return
+
+	if el := strings.TrimSpace(f[1]); len(el) > 0 {
+		if s.Elevation, err = strconv.Atoi(el); err != nil {
+			return
+		}
 	}
 
-	if s.Azimuth, err = strconv.Atoi(f[2]); err != nil {
-		return
+	if az := strings.TrimSpace(f[2]); len(az) > 0 {
+		if s.Azimuth, err = strconv.Atoi(az); err != nil {
+			return
+		}
 	}
 
-	if f[3] != "" {
+	if snrStr := strings.TrimSpace(f[3]); len(snrStr) > 0 {
 		var snr int
-		if snr, err = strconv.Atoi(f[3]); err != nil {
+		if snr, err = strconv.Atoi(snrStr); err != nil {
 			return
 		}
 		s.SNR = &snr
 	}
+
 	return
 }
 
@@ -50,12 +57,12 @@ type GPGSV struct {
 	NbOfMessage      int // Number of messages, total number of GPGSV messages being output (1 ~ 3)
 	SequenceNumber   int // Sequence number of this entry (1 ~ 3)
 	SatellitesInView int
-	Satellites       [4]Satellite
+	Satellites       []Satellite
 }
 
 func (m *GPGSV) parse() (err error) {
-	if len(m.Fields) != 19 {
-		return m.Error(fmt.Errorf("Incomplete GPGSV message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 19))
+	if len(m.Fields) != 19 && len(m.Fields) != 3 {
+		return m.Error(fmt.Errorf("Incomplete message, not enougth data fields (got: %d)", len(m.Fields)))
 	}
 
 	if m.NbOfMessage, err = strconv.Atoi(m.Fields[0]); err != nil {
@@ -63,7 +70,7 @@ func (m *GPGSV) parse() (err error) {
 	}
 
 	if m.NbOfMessage < 1 || m.NbOfMessage > 3 {
-		return m.Error(fmt.Errorf("GPGSV number of messages out of range (got: %d)", m.NbOfMessage))
+		return m.Error(fmt.Errorf("Number of messages out of range (got: %d)", m.NbOfMessage))
 	}
 
 	if m.SequenceNumber, err = strconv.Atoi(m.Fields[1]); err != nil {
@@ -71,21 +78,27 @@ func (m *GPGSV) parse() (err error) {
 	}
 
 	if m.SequenceNumber < 1 || m.SequenceNumber > 3 {
-		return m.Error(fmt.Errorf("GPGSV sequence number out of range (got: %d)", m.SequenceNumber))
+		return m.Error(fmt.Errorf("Sequence number out of range (got: %d)", m.SequenceNumber))
 	}
 
 	if m.SatellitesInView, err = strconv.Atoi(m.Fields[2]); err != nil {
 		return m.Error(err)
 	}
 
-	offset := 3
-	padding := 4
-
-	for k := range m.Satellites {
-		if m.Satellites[k], err = newSatelliteFromFields(m.Fields[offset : offset+padding]); err != nil {
-			return
+	if m.SatellitesInView > 0 {
+		m.Satellites = make([]Satellite, 4)
+		offset := 3
+		padding := 4
+		if len(m.Fields[offset:]) < padding {
+			return m.Error(fmt.Errorf("Wrong number of satellite data"))
 		}
-		offset += padding
+
+		for k := range m.Satellites {
+			if m.Satellites[k], err = newSatelliteFromFields(m.Fields[offset : offset+padding]); err != nil {
+				return m.Error(err)
+			}
+			offset += padding
+		}
 	}
 
 	return nil
@@ -95,22 +108,14 @@ func (m *GPGSV) Serialize() string { // Implement NMEA interface
 	hdr := TypeIds["GPGSV"]
 	fields := make([]string, 0)
 
-	fields = append(fields, strconv.Itoa(m.NbOfMessage), strconv.Itoa(m.SequenceNumber), strconv.Itoa(m.SatellitesInView))
+	fields = append(fields,
+		strconv.Itoa(m.NbOfMessage),
+		strconv.Itoa(m.SequenceNumber),
+		prependZeroValue(m.SatellitesInView, 10),
+	)
 
 	for _, s := range m.Satellites {
-		fields = append(fields, s.Id)
-
-		if s.Elevation < 10 {
-			fields = append(fields, "0"+strconv.Itoa(s.Elevation))
-		} else {
-			fields = append(fields, strconv.Itoa(s.Elevation))
-		}
-
-		if s.Azimuth < 100 {
-			fields = append(fields, "0"+strconv.Itoa(s.Azimuth))
-		} else {
-			fields = append(fields, strconv.Itoa(s.Azimuth))
-		}
+		fields = append(fields, s.Id, prependZeroValue(s.Elevation, 10), prependZeroValue(s.Azimuth, 100))
 
 		if s.SNR == nil {
 			fields = append(fields, "")
@@ -123,4 +128,12 @@ func (m *GPGSV) Serialize() string { // Implement NMEA interface
 	msg.Checksum = msg.ComputeChecksum()
 
 	return msg.Serialize()
+}
+
+func prependZeroValue(value int, threshold int) string {
+	rv := strconv.Itoa(value)
+	if value < threshold {
+		return "0" + rv
+	}
+	return rv
 }

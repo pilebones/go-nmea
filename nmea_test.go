@@ -16,6 +16,15 @@ func TestNMEAMessage(t *testing.T) {
 		"$GPGLL,3110.2908,N,12123.2348,E,041139.000,A,A*59",
 		"$GPTXT,01,01,02,ANTSTATUS=OK*3B",
 
+		// NMEA packet when no satelite receive
+		"$GPGLL,,,,,000107.799,V,N*7B",
+		"$GPTXT,01,01,02,ANTSTATUS=OPEN*2B",
+		"$GPVTG,0.00,T,,M,0.00,N,0.00,K,N*32",
+		"$GPGGA,000107.799,,,,,0,0,,,M,,M,,*49",
+		"$GPTXT,01,01,02,ANTSTATUS=OPEN*2B",
+		"$GPRMC,000108.799,V,,,,,0.00,0.00,060180,,,N*4C",
+		"$GPGSV,1,1,00*79",
+
 		// MTK NMEA Packet Protocol
 		// From "L80 GPS Protocol Specification"
 		"$PMTK010,001*2E",
