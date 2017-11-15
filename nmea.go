@@ -8,7 +8,7 @@ import (
 
 // Interface for each kind of NMEA message
 type NMEA interface {
-	GetMessage() *Message
+	GetMessage() Message
 	Error(err error) error
 	Serialize() string
 }
@@ -25,11 +25,11 @@ type Message struct {
 	Checksum uint8
 }
 
-func (m *Message) GetMessage() *Message {
+func (m Message) GetMessage() Message {
 	return m
 }
 
-func (m *Message) Error(err error) error {
+func (m Message) Error(err error) error {
 	return fmt.Errorf("[%s] %s (with payload: %s)", m.Type.Serialize(), err.Error(), strings.Join(m.Fields, FIELD_DELIMITER))
 }
 
@@ -99,7 +99,7 @@ func (m *Message) parse(data string) (err error) {
 	}
 
 	if m.Checksum = uint8(checksum); m.Checksum != m.ComputeChecksum() {
-		return fmt.Errorf("Checksump mismatch (got: 0x%x, wanted: 0x%x)", checksum, m.ComputeChecksum())
+		return m.Error(fmt.Errorf("Checksump mismatch (got: 0x%x, wanted: 0x%x)", checksum, m.ComputeChecksum()))
 	}
 
 	return nil

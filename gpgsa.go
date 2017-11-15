@@ -21,10 +21,6 @@ type GPGSA struct {
 	PDOP, HDOP, VDOP       float64
 }
 
-func (m *GPGSA) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPGSA) parse() (err error) {
 	if len(m.Fields) != 17 {
 		return m.Error(fmt.Errorf("Incomplete GPGSA message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 17))

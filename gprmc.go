@@ -30,10 +30,6 @@ type GPRMC struct {
 	PositioningMode   PositioningMode
 }
 
-func (m *GPRMC) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPRMC) parse() (err error) {
 	if len(m.Fields) != 12 {
 		return m.Error(fmt.Errorf("Incomplete GPRMC message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 12))

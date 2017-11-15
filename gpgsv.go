@@ -53,10 +53,6 @@ type GPGSV struct {
 	Satellites       [4]Satellite
 }
 
-func (m *GPGSV) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPGSV) parse() (err error) {
 	if len(m.Fields) != 19 {
 		return m.Error(fmt.Errorf("Incomplete GPGSV message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 19))

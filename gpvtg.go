@@ -21,10 +21,6 @@ type GPVTG struct {
 	PositioningMode PositioningMode
 }
 
-func (m *GPVTG) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPVTG) parse() (err error) {
 	if len(m.Fields) != 9 {
 		return m.Error(fmt.Errorf("Incomplete GPVTG message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 9))

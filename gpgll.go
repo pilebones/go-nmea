@@ -22,20 +22,21 @@ type GPGLL struct {
 	PositioningMode     PositioningMode
 }
 
-func (m *GPGLL) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPGLL) parse() (err error) {
 	if len(m.Fields) != 7 {
 		return m.Error(fmt.Errorf("Incomplete GPGLL message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 7))
 	}
 
-	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[0:2], " ")); err != nil {
-		return m.Error(err)
+	if latitude := strings.TrimSpace(strings.Join(m.Fields[0:2], " ")); len(latitude) > 0 {
+		if m.Latitude, err = NewLatLong(latitude); err != nil {
+			return m.Error(err)
+		}
 	}
-	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[2:4], " ")); err != nil {
-		return m.Error(err)
+
+	if longitude := strings.TrimSpace(strings.Join(m.Fields[2:4], " ")); len(longitude) > 0 {
+		if m.Longitude, err = NewLatLong(longitude); err != nil {
+			return m.Error(err)
+		}
 	}
 
 	if m.TimeUTC, err = time.Parse("150405.000", m.Fields[4]); err != nil {

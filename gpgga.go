@@ -31,10 +31,6 @@ type GPGGA struct {
 	// DGPSiStationId *string
 }
 
-func (m *GPGGA) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPGGA) parse() (err error) {
 	if len(m.Fields) != 14 {
 		return fmt.Errorf("Incomplete GPGGA message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 14)
@@ -51,12 +47,16 @@ func (m *GPGGA) parse() (err error) {
 		return m.Error(fmt.Errorf("Unable to parse time UTC from data field (got: %s)", m.Fields[0]))
 	}
 
-	if m.Latitude, err = NewLatLong(strings.Join(m.Fields[1:3], " ")); err != nil {
-		return m.Error(err)
+	if latitude := strings.TrimSpace(strings.Join(m.Fields[1:3], " ")); len(latitude) > 0 {
+		if m.Latitude, err = NewLatLong(latitude); err != nil {
+			return m.Error(err)
+		}
 	}
 
-	if m.Longitude, err = NewLatLong(strings.Join(m.Fields[3:5], " ")); err != nil {
-		return m.Error(err)
+	if longitude := strings.TrimSpace(strings.Join(m.Fields[3:5], " ")); len(longitude) > 0 {
+		if m.Longitude, err = NewLatLong(longitude); err != nil {
+			return m.Error(err)
+		}
 	}
 
 	if m.QualityIndicator, err = ParseQualityIndicator(m.Fields[5]); err != nil {
@@ -67,15 +67,21 @@ func (m *GPGGA) parse() (err error) {
 		return m.Error(err)
 	}
 
-	if m.HDOP, err = strconv.ParseFloat(m.Fields[7], 64); err != nil {
-		return m.Error(err)
+	if hdop := m.Fields[7]; len(hdop) > 0 {
+		if m.HDOP, err = strconv.ParseFloat(hdop, 64); err != nil {
+			return m.Error(err)
+		}
 	}
-	if m.Altitude, err = strconv.ParseFloat(m.Fields[8], 64); err != nil {
-		return m.Error(err)
+	if altitude := m.Fields[8]; len(altitude) > 0 {
+		if m.Altitude, err = strconv.ParseFloat(altitude, 64); err != nil {
+			return m.Error(err)
+		}
 	}
 
-	if m.GeoIdSep, err = strconv.ParseFloat(m.Fields[10], 64); err != nil {
-		return m.Error(err)
+	if geoIdSep := m.Fields[10]; len(geoIdSep) > 0 {
+		if m.GeoIdSep, err = strconv.ParseFloat(m.Fields[10], 64); err != nil {
+			return m.Error(err)
+		}
 	}
 
 	return nil

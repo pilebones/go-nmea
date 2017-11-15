@@ -30,10 +30,6 @@ type GPTXT struct {
 	TxtMsg string
 }
 
-func (m *GPTXT) GetMessage() *Message { // Implement NMEA interface
-	return &m.Message
-}
-
 func (m *GPTXT) parse() (err error) {
 	if len(m.Fields) != 4 {
 		return m.Error(fmt.Errorf("Incomplete GPTXT message, not enougth data fields (got: %d, wanted: %d)", len(m.Fields), 4))
@@ -79,4 +75,27 @@ func (m GPTXT) Serialize() string { // Implement NMEA interface
 	msg.Checksum = msg.ComputeChecksum()
 
 	return msg.Serialize()
+}
+
+func (m GPTXT) Env() map[string]string {
+	if fields := strings.SplitN(m.TxtMsg, "=", 2); len(fields) == 2 {
+		return map[string]string{
+			fields[0]: fields[1],
+		}
+	}
+	return nil
+}
+
+func (m GPTXT) AntennaStatus() *string {
+	env := m.Env()
+	if env == nil {
+		return nil
+	}
+
+	status, exists := env["ANTSTATUS"]
+	if !exists {
+		return nil
+	}
+
+	return &status
 }
