@@ -1,4 +1,4 @@
-# go-nmea
+# go-nmea [![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea) [![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea) [![Build Status](https://travis-ci.org/pilebones/go-nmea.svg?branch=master)](https://travis-ci.org/pilebones/go-nmea)
 
 A Golang library for decode standard and proprietary NMEA packet message (GPS information dissector).
 
@@ -51,3 +51,10 @@ func main() {
 	fmt.Println("Craft NMEA packets using Serialize():", msg.Serialize())
 }
 ```
+
+## Documentation
+- [GoDoc Reference](http://godoc.org/github.com/pilebones/go-nmea).
+
+## License
+
+go-nmea is available under the [GNU GPL v3 - Clause License](https://opensource.org/licenses/GPL-3.0).
