@@ -104,7 +104,7 @@ func (m *GPGSV) parse() (err error) {
 	return nil
 }
 
-func (m *GPGSV) Serialize() string { // Implement NMEA interface
+func (m GPGSV) Serialize() string { // Implement NMEA interface
 	hdr := TypeIds["GPGSV"]
 	fields := make([]string, 0)
 

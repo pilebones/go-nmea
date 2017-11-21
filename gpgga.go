@@ -87,6 +87,21 @@ func (m *GPGGA) parse() (err error) {
 	return nil
 }
 
+func (m GPGGA) Serialize() string { // Implement NMEA interface
+
+	hdr := TypeIds["GPGGA"]
+	fields := make([]string, 0)
+
+	fields = append(fields, m.TimeUTC.Format("150405.000"))
+
+	// TODO: Should be implemented
+
+	msg := Message{Type: hdr, Fields: fields}
+	msg.Checksum = msg.ComputeChecksum()
+
+	return msg.Serialize()
+}
+
 const (
 	QUALITY_INDICATOR_INVALID = iota
 	QUALITY_INDICATOR_GNSSS
