@@ -61,8 +61,8 @@ type GPGSV struct {
 }
 
 func (m *GPGSV) parse() (err error) {
-	if len(m.Fields) != 19 && len(m.Fields) != 3 {
-		return m.Error(fmt.Errorf("Incomplete message, not enougth data fields (got: %d)", len(m.Fields)))
+	if len(m.Fields) < 3 || (len(m.Fields)-3)%4 != 0 {
+		return m.Error(fmt.Errorf("Invalid message size (got: %d)", len(m.Fields)))
 	}
 
 	if m.NbOfMessage, err = strconv.Atoi(m.Fields[0]); err != nil {
@@ -86,18 +86,27 @@ func (m *GPGSV) parse() (err error) {
 	}
 
 	if m.SatellitesInView > 0 {
-		m.Satellites = make([]Satellite, 4)
 		offset := 3
 		padding := 4
-		if len(m.Fields[offset:]) < padding {
-			return m.Error(fmt.Errorf("Wrong number of satellite data"))
-		}
+		m.Satellites = make([]Satellite, 0)
 
-		for k := range m.Satellites {
-			if m.Satellites[k], err = newSatelliteFromFields(m.Fields[offset : offset+padding]); err != nil {
+		for len(m.Fields[offset:]) != 0 {
+			if len(m.Fields[offset:]) < padding {
+				return m.Error(fmt.Errorf("Wrong number of satellite data (got: %d)", len(m.Fields[offset:])))
+			}
+
+			sat, err := newSatelliteFromFields(m.Fields[offset : offset+padding])
+			if err != nil {
 				return m.Error(err)
 			}
+
+			m.Satellites = append(m.Satellites, sat)
 			offset += padding
+
+		}
+
+		if len(m.Satellites) > 4 {
+			return m.Error(fmt.Errorf("Too much satellite data in this message (got: %d)", len(m.Satellites)))
 		}
 	}
 

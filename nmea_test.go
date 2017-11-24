@@ -24,6 +24,8 @@ func TestNMEAMessage(t *testing.T) {
 		"$GPTXT,01,01,02,ANTSTATUS=OPEN*2B",
 		"$GPRMC,000108.799,V,,,,,0.00,0.00,060180,,,N*4C",
 		"$GPGSV,1,1,00*79",
+		"$GPGSV,3,3,09,26,02,062,*42",
+		"$GPGSV,1,1,03,09,,,26,23,,,23,07,,,24*76",
 
 		// MTK NMEA Packet Protocol
 		// From "L80 GPS Protocol Specification"
