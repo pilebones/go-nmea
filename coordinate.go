@@ -102,9 +102,52 @@ func ParseDM(raw string) (LatLong, error) {
 	}
 }
 
+// CardinalPoint return the cardinal point related to the kind of coordinate (long or lat)
+func (l LatLong) CardinalPoint(isLatitude bool) CardinalPoint {
+	if l == 0 {
+		return ""
+	}
+
+	if l < 0 {
+		if isLatitude {
+			return SOUTH
+		}
+		return WEST
+	}
+
+	if isLatitude {
+		return NORTH
+	}
+
+	return EAST
+}
+
+// DM extract degrees and minutes
+func (l LatLong) DM() (int, float64) {
+	d := math.Floor(float64(l))
+	m := (float64(l) - d) * 60
+	return int(d), m
+}
+
+// DMS extract degrees, minutes and secondes
+func (l LatLong) DMS() (int, int, float64) {
+	d, m := l.DM()
+	m = math.Floor(m)
+	s := (float64(l) - (float64(d) + (m / 60))) * 60 * 60 // TODO: round secondes
+	return int(d), int(m), s
+}
+
+// ToDM return string like ‘ddmm.mmmm’: degree and minutes as GPS module provide
+func (l LatLong) ToDM() string {
+	if l == 0 {
+		return ""
+	}
+	d, m := l.DM()
+	return strings.Trim(fmt.Sprintf("%d%f", d, m), "0")
+}
+
+// PrintDMS return string like: dd° mm' ss.ss" to be human readable
 func (l LatLong) PrintDMS() string {
-	degrees := math.Floor(float64(l))
-	minutes := math.Floor((float64(l) - degrees) * 60)
-	secondes := (float64(l) - (degrees + (minutes / 60))) * 60 * 60 // TODO: round secondes
-	return fmt.Sprintf("%d° %d' %f\"", int(degrees), int(minutes), secondes)
+	degrees, minutes, secondes := l.DMS()
+	return fmt.Sprintf("%d° %d' %f\"", degrees, minutes, secondes)
 }

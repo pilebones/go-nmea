@@ -24,7 +24,7 @@ type GPGGA struct {
 	NbOfSatellitesUsed uint64
 	HDOP               float64
 	Altitude           float64
-	GeoIdSep           float64
+	GeoIdSep           *float64
 
 	// FIXME: Manage field below when I found a sample with no-empty data
 	// DGPSAge        *uint64
@@ -79,9 +79,11 @@ func (m *GPGGA) parse() (err error) {
 	}
 
 	if geoIdSep := m.Fields[10]; len(geoIdSep) > 0 {
-		if m.GeoIdSep, err = strconv.ParseFloat(m.Fields[10], 64); err != nil {
+		id, err := strconv.ParseFloat(m.Fields[10], 64)
+		if err != nil {
 			return m.Error(err)
 		}
+		m.GeoIdSep = &id
 	}
 
 	return nil
@@ -92,9 +94,39 @@ func (m GPGGA) Serialize() string { // Implement NMEA interface
 	hdr := TypeIds["GPGGA"]
 	fields := make([]string, 0)
 
-	fields = append(fields, m.TimeUTC.Format("150405.000"))
+	fields = append(fields, m.TimeUTC.Format("150405.000"),
+		strings.Trim(m.Latitude.ToDM(), "0"), m.Latitude.CardinalPoint(true).String(),
+		strings.Trim(m.Longitude.ToDM(), "0"), m.Longitude.CardinalPoint(false).String(),
+		strconv.Itoa(int(m.QualityIndicator)),
+		strconv.Itoa(int(m.NbOfSatellitesUsed)),
+	)
 
-	// TODO: Should be implemented
+	if m.HDOP > 0 {
+		fields = append(fields, fmt.Sprintf("%.1f", m.HDOP))
+	} else {
+		fields = append(fields, "")
+	}
+
+	if m.Altitude > 0 {
+		fields = append(fields, PrependXZero(m.Altitude, "%.1f", 4))
+
+	} else {
+		fields = append(fields, "")
+	}
+
+	fields = append(fields, "M")
+
+	if m.GeoIdSep != nil {
+		fields = append(fields, fmt.Sprintf("%.1f", *m.GeoIdSep))
+	} else {
+		fields = append(fields, "")
+	}
+
+	fields = append(fields,
+		"M",
+		"", // DGPSAge always empty ?
+		"", // DGPSiStationId always empty ?
+	)
 
 	msg := Message{Type: hdr, Fields: fields}
 	msg.Checksum = msg.ComputeChecksum()

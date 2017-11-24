@@ -17,8 +17,8 @@ func NewGPGSV(m Message) *GPGSV {
 
 type Satellite struct {
 	Id        string
-	Elevation int  // Elevation in degree (0 ~ 90)
-	Azimuth   int  // Azimuth in degree (0 ~ 359)
+	Elevation *int // Elevation in degree (0 ~ 90)
+	Azimuth   *int // Azimuth in degree (0 ~ 359)
 	SNR       *int // Signal to Noise Ration in dBHz (0 ~ 99), empty if not tracking
 }
 
@@ -30,15 +30,21 @@ func newSatelliteFromFields(f []string) (s Satellite, err error) {
 	s.Id = f[0]
 
 	if el := strings.TrimSpace(f[1]); len(el) > 0 {
-		if s.Elevation, err = strconv.Atoi(el); err != nil {
+		var elevation int
+		elevation, err = strconv.Atoi(el)
+		if err != nil {
 			return
 		}
+		s.Elevation = &elevation
 	}
 
 	if az := strings.TrimSpace(f[2]); len(az) > 0 {
-		if s.Azimuth, err = strconv.Atoi(az); err != nil {
+		var azimuth int
+		azimuth, err = strconv.Atoi(az)
+		if err != nil {
 			return
 		}
+		s.Azimuth = &azimuth
 	}
 
 	if snrStr := strings.TrimSpace(f[3]); len(snrStr) > 0 {
@@ -120,11 +126,23 @@ func (m GPGSV) Serialize() string { // Implement NMEA interface
 	fields = append(fields,
 		strconv.Itoa(m.NbOfMessage),
 		strconv.Itoa(m.SequenceNumber),
-		prependZeroValue(m.SatellitesInView, 10),
+		PrependXZero(float64(m.SatellitesInView), "%.0f", 2),
 	)
 
 	for _, s := range m.Satellites {
-		fields = append(fields, s.Id, prependZeroValue(s.Elevation, 10), prependZeroValue(s.Azimuth, 100))
+		fields = append(fields, s.Id)
+
+		if s.Elevation != nil {
+			fields = append(fields, PrependXZero(float64(*s.Elevation), "%.0f", 2))
+		} else {
+			fields = append(fields, "")
+		}
+
+		if s.Azimuth != nil {
+			fields = append(fields, PrependXZero(float64(*s.Azimuth), "%.0f", 3))
+		} else {
+			fields = append(fields, "")
+		}
 
 		if s.SNR == nil {
 			fields = append(fields, "")
@@ -137,12 +155,4 @@ func (m GPGSV) Serialize() string { // Implement NMEA interface
 	msg.Checksum = msg.ComputeChecksum()
 
 	return msg.Serialize()
-}
-
-func prependZeroValue(value int, threshold int) string {
-	rv := strconv.Itoa(value)
-	if value < threshold {
-		return "0" + rv
-	}
-	return rv
 }
