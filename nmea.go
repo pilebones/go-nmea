@@ -6,36 +6,39 @@ import (
 	"strings"
 )
 
-// Interface for each kind of NMEA message
+// NMEA is an interface for each kind of NMEA message
 type NMEA interface {
 	GetMessage() Message
 	Error(err error) error
 	Serialize() string
 }
 
-// Interface for each kind of NMEA header according to TalkerId
+// Header is an interface for each kind of NMEA header according to TalkerId
 type Header interface {
-	GetTypeId() TypeId
+	GetTypeID() TypeID
 	Serialize() string
 }
 
+// Message is the base aand low-level struct (envelope) without advanced dissection for each NMEA message
 type Message struct {
 	Type     Header
 	Fields   []string
 	Checksum uint8
 }
 
+// GetMessage return base Message to respect interface
 func (m Message) GetMessage() Message {
 	return m
 }
 
+// Error return common error with wrapped data to enhance debugging
 func (m Message) Error(err error) error {
-	return fmt.Errorf("[%s] %s (with payload: %s)", m.Type.Serialize(), err.Error(), strings.Join(m.Fields, FIELD_DELIMITER))
+	return fmt.Errorf("[%s] %s (with payload: %s)", m.Type.Serialize(), err.Error(), strings.Join(m.Fields, FieldDelimiter))
 }
 
-// Serialize message to render raw
+// Serialize NMEA message to render raw
 func (m Message) Serialize() string {
-	output := PREFIX + m.Payload() + SUFFIX
+	output := Prefix + m.Payload() + Suffix
 	checksum := fmt.Sprintf("%X", m.Checksum)
 	if len(checksum) == 1 {
 		checksum = "0" + checksum // Padd with 0 if needed
@@ -45,8 +48,8 @@ func (m Message) Serialize() string {
 
 // Payload return data after $ and before *
 func (m Message) Payload() string {
-	if f := strings.Join(m.Fields, FIELD_DELIMITER); len(f) > 0 {
-		return m.Type.Serialize() + FIELD_DELIMITER + f
+	if f := strings.Join(m.Fields, FieldDelimiter); len(f) > 0 {
+		return m.Type.Serialize() + FieldDelimiter + f
 	}
 	return m.Type.Serialize()
 }
@@ -60,7 +63,7 @@ func (m Message) ComputeChecksum() (c uint8) {
 }
 
 func (m *Message) parse(data string) (err error) {
-	if len(data) < (len(PREFIX) + len(SUFFIX) + 2) { // +2 for checksum in hex format
+	if len(data) < (len(Prefix) + len(Suffix) + 2) { // +2 for checksum in hex format
 		return fmt.Errorf("Wrong length")
 	}
 
@@ -68,22 +71,22 @@ func (m *Message) parse(data string) (err error) {
 	endMsgOffset := len(data) - 3
 	checksumOffset := len(data) - 2
 
-	if string(data[startMsgOffset]) != PREFIX {
-		return fmt.Errorf("Message should start with %s (got: %s)", PREFIX, string(data[startMsgOffset]))
+	if string(data[startMsgOffset]) != Prefix {
+		return fmt.Errorf("Message should start with %s (got: %s)", Prefix, string(data[startMsgOffset]))
 	}
 
-	if string(data[endMsgOffset]) != SUFFIX {
-		return fmt.Errorf("Message should countains with %s (got: %s)", SUFFIX, string(data[endMsgOffset]))
+	if string(data[endMsgOffset]) != Suffix {
+		return fmt.Errorf("Message should countains with %s (got: %s)", Suffix, string(data[endMsgOffset]))
 	}
 
 	msg := data[startMsgOffset+1 : endMsgOffset]
 
-	fields := strings.Split(msg, FIELD_DELIMITER)
+	fields := strings.Split(msg, FieldDelimiter)
 	if len(fields) == 0 {
 		return fmt.Errorf("Message has no type or field")
 	}
 
-	typ, ok := TypeIds[fields[0]]
+	typ, ok := TypeIDs[fields[0]]
 	if !ok {
 		return fmt.Errorf("Message should countains a valid type id (got: %s)", fields[0])
 	}

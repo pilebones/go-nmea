@@ -100,8 +100,8 @@ func ParseFixStatus(raw string) (fs FixStatus, err error) {
 }
 
 const (
-	MODE_MANUAL Mode = "M"
-	MODE_AUTO   Mode = "A"
+	ModeManual Mode = "M"
+	ModeAuto   Mode = "A"
 )
 
 type Mode string
@@ -113,7 +113,7 @@ func (m Mode) String() string {
 func ParseMode(raw string) (m Mode, err error) {
 	m = Mode(raw)
 	switch m {
-	case MODE_MANUAL, MODE_AUTO:
+	case ModeManual, ModeAuto:
 	default:
 		err = fmt.Errorf("unknow value (got: %s)", m)
 	}

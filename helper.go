@@ -5,22 +5,24 @@ import (
 	"math"
 )
 
-// PrependXZeroFloat return string with required number of zero (as prefix)
+// PrependXZero return string with expected number of zero (as prefix)
 // to have X number before coma
 func PrependXZero(value float64, formatString string, expected uint) string {
 	rv := fmt.Sprintf(formatString, value)
 	nbChar := uint(len(fmt.Sprintf("%d", int(math.Floor(value)))))
 	for nbChar < expected {
 		rv = "0" + rv
-		nbChar += 1
+		nbChar++
 	}
 	return rv
 }
 
+// PrependToFloatXZero doing same thing that PrependXZeroFloat but with float as input
 func PrependToFloatXZero(value float64, expected uint) string {
 	return PrependXZero(value, "%f", expected)
 }
 
+// PrependToIntXZero doing same thing that PrependXZeroFloat but with int as input
 func PrependToIntXZero(value int, expected uint) string {
 	return PrependXZero(float64(value), "%.0f", expected)
 }

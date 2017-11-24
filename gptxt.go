@@ -54,7 +54,7 @@ func (m *GPTXT) parse() (err error) {
 
 func (m GPTXT) Serialize() string { // Implement NMEA interface
 
-	hdr := TypeIds["GPTXT"]
+	hdr := TypeIDs["GPTXT"]
 	fields := make([]string, 0)
 
 	if m.TotalNbMsgInTx < 10 {

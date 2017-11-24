@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	NORTH CardinalPoint = "N"
-	SOUTH CardinalPoint = "S"
-	EAST  CardinalPoint = "E"
-	WEST  CardinalPoint = "W"
+	// Allowed cardinal points
+	North CardinalPoint = "N"
+	South CardinalPoint = "S"
+	East  CardinalPoint = "E"
+	West  CardinalPoint = "W"
 )
 
 type CardinalPoint string
@@ -23,7 +24,7 @@ func (c CardinalPoint) String() string {
 func ParseCardinalPoint(raw string) (cp CardinalPoint, err error) {
 	cp = CardinalPoint(raw)
 	switch cp {
-	case NORTH, SOUTH, EAST, WEST:
+	case North, South, East, West:
 	default:
 		err = fmt.Errorf("unknow value")
 	}
@@ -31,8 +32,11 @@ func ParseCardinalPoint(raw string) (cp CardinalPoint, err error) {
 }
 
 const (
-	MIN_LATLONG_THRESHOLD LatLong = -180
-	MAX_LATLONG_THRESHOLD LatLong = 180
+	// LatLong Thresholds (ie: spherical degrees)
+	// Min is the minimum value allowed for a LatLong
+	Min LatLong = -180
+	// Max is the maximum value allowed for a LatLong
+	Max LatLong = 180
 )
 
 type LatLong float64
@@ -53,7 +57,7 @@ func NewLatLong(raw string) (l LatLong, err error) {
 		return
 	}
 
-	if l < MIN_LATLONG_THRESHOLD || l > MAX_LATLONG_THRESHOLD {
+	if l < Min || l > Max {
 		err = fmt.Errorf("invalid range (got: %f)", l)
 	}
 	return
@@ -75,11 +79,11 @@ func ParseDM(raw string) (LatLong, error) {
 	)
 
 	if len(raw) < 2 {
-		return LatLong(0), fmt.Errorf("Wrong DM format, got: \"%s\"", string(raw))
+		return LatLong(0), fmt.Errorf("Wrong DM format, got: \"%s\"", raw)
 	}
 
 	// Explode data
-	if dm, err = strconv.ParseFloat(strings.TrimSpace(string(raw[:len(raw)-2])), 64); err != nil {
+	if dm, err = strconv.ParseFloat(strings.TrimSpace(raw[:len(raw)-2]), 64); err != nil {
 		return LatLong(0), err
 	}
 
@@ -93,9 +97,9 @@ func ParseDM(raw string) (LatLong, error) {
 	dm = d + m/60             // switch minute to degree to get value in the same referential
 
 	switch dir {
-	case NORTH, EAST:
+	case North, East:
 		return LatLong(dm), nil
-	case SOUTH, WEST:
+	case South, West:
 		return LatLong(0 - dm), nil
 	default:
 		return 0, fmt.Errorf("Wrong direction (got: %s)", dir.String())
@@ -110,16 +114,16 @@ func (l LatLong) CardinalPoint(isLatitude bool) CardinalPoint {
 
 	if l < 0 {
 		if isLatitude {
-			return SOUTH
+			return South
 		}
-		return WEST
+		return West
 	}
 
 	if isLatitude {
-		return NORTH
+		return North
 	}
 
-	return EAST
+	return East
 }
 
 // DM extract degrees and minutes
@@ -134,7 +138,7 @@ func (l LatLong) DMS() (int, int, float64) {
 	d, m := l.DM()
 	m = math.Floor(m)
 	s := (float64(l) - (float64(d) + (m / 60))) * 60 * 60 // TODO: round secondes
-	return int(d), int(m), s
+	return d, int(m), s
 }
 
 // ToDM return string like ‘ddmm.mmmm’: degree and minutes as GPS module provide

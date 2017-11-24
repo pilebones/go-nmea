@@ -73,9 +73,9 @@ func (m *GPRMC) parse() (err error) {
 			}
 
 			switch magneticVariationDir {
-			case WEST:
+			case West:
 				m.MagneticVariation = 0 - m.MagneticVariation
-			case EAST:
+			case East:
 				// Allowed direction
 			default:
 				return m.Error(fmt.Errorf("Wrong magnetic variation direction (got: %s)", m.Fields[10]))

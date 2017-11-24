@@ -91,7 +91,7 @@ func (m *GPGGA) parse() (err error) {
 
 func (m GPGGA) Serialize() string { // Implement NMEA interface
 
-	hdr := TypeIds["GPGGA"]
+	hdr := TypeIDs["GPGGA"]
 	fields := make([]string, 0)
 
 	fields = append(fields, m.TimeUTC.Format("150405.000"),
@@ -135,20 +135,20 @@ func (m GPGGA) Serialize() string { // Implement NMEA interface
 }
 
 const (
-	QUALITY_INDICATOR_INVALID = iota
-	QUALITY_INDICATOR_GNSSS
-	QUALITY_INDICATOR_DGPS
+	InvalidIndicator = iota
+	GNSSS
+	DGPS
 )
 
 type QualityIndicator int
 
 func (s QualityIndicator) String() string {
 	switch s {
-	case QUALITY_INDICATOR_INVALID:
+	case InvalidIndicator:
 		return "invalid"
-	case QUALITY_INDICATOR_GNSSS:
+	case GNSSS:
 		return "GNSS fix"
-	case QUALITY_INDICATOR_DGPS:
+	case DGPS:
 		return "DGPS fix"
 	default:
 		return "unknow"
@@ -164,7 +164,7 @@ func ParseQualityIndicator(raw string) (qi QualityIndicator, err error) {
 
 	qi = QualityIndicator(i)
 	switch qi {
-	case QUALITY_INDICATOR_INVALID, QUALITY_INDICATOR_GNSSS, QUALITY_INDICATOR_DGPS:
+	case InvalidIndicator, GNSSS, DGPS:
 	default:
 		err = fmt.Errorf("unknow value")
 	}
