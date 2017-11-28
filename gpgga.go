@@ -95,8 +95,8 @@ func (m GPGGA) Serialize() string { // Implement NMEA interface
 	fields := make([]string, 0)
 
 	fields = append(fields, m.TimeUTC.Format("150405.000"),
-		strings.Trim(m.Latitude.ToDM(), "0"), m.Latitude.CardinalPoint(true).String(),
-		strings.Trim(m.Longitude.ToDM(), "0"), m.Longitude.CardinalPoint(false).String(),
+		strings.Trim(m.Latitude.Serialize(), "0"), m.Latitude.CardinalPoint(true).String(),
+		strings.Trim(m.Longitude.Serialize(), "0"), m.Longitude.CardinalPoint(false).String(),
 		strconv.Itoa(int(m.QualityIndicator)),
 		strconv.Itoa(int(m.NbOfSatellitesUsed)),
 	)

@@ -3,6 +3,7 @@ package nmea
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -13,6 +14,10 @@ const (
 	South CardinalPoint = "S"
 	East  CardinalPoint = "E"
 	West  CardinalPoint = "W"
+)
+
+var (
+	DMFormat = regexp.MustCompile("^([0-9]*\\.?[0-9]+)\\ ?([NSEW])?$")
 )
 
 type CardinalPoint string
@@ -39,6 +44,7 @@ const (
 	Max LatLong = 180
 )
 
+// FIXME: Limitation with float64 detected to keep accuracy of GPS coordinate, next step: use big.Float
 type LatLong float64
 
 // NewLatLong parses input has coordinate or return error
@@ -48,13 +54,19 @@ type LatLong float64
 // - DD (Decimal Degree), ie: "31.8534389" "22.870216666666668"
 func NewLatLong(raw string) (l LatLong, err error) {
 
-	if strings.TrimSpace(raw) == "" {
+	if raw = strings.TrimSpace(raw); len(raw) == 0 {
 		err = fmt.Errorf("Invalid LatLong, can't be empty")
 		return
 	}
 
-	if l, err = ParseDM(raw); err != nil {
-		return
+	var value float64
+	if value, err = strconv.ParseFloat(raw, 64); err == nil {
+		l = LatLong(value)
+	} else {
+		// Try another format like DM
+		if l, err = ParseDM(raw); err != nil {
+			return
+		}
 	}
 
 	if l < Min || l > Max {
@@ -78,16 +90,17 @@ func ParseDM(raw string) (LatLong, error) {
 		err error
 	)
 
-	if len(raw) < 2 {
+	matches := DMFormat.FindAllStringSubmatch(strings.TrimSpace(raw), 1)
+	if len(matches) == 0 || len(matches[0]) < 3 {
 		return LatLong(0), fmt.Errorf("Wrong DM format, got: \"%s\"", raw)
 	}
 
 	// Explode data
-	if dm, err = strconv.ParseFloat(strings.TrimSpace(raw[:len(raw)-2]), 64); err != nil {
+	if dm, err = strconv.ParseFloat(matches[0][1], 64); err != nil {
 		return LatLong(0), err
 	}
 
-	if dir, err = ParseCardinalPoint(string(raw[len(raw)-1])); err != nil {
+	if dir, err = ParseCardinalPoint(matches[0][2]); err != nil {
 		return LatLong(0), err
 	}
 
@@ -141,8 +154,8 @@ func (l LatLong) DMS() (int, int, float64) {
 	return d, int(m), s
 }
 
-// ToDM return string like ‘ddmm.mmmm’: degree and minutes as GPS module provide
-func (l LatLong) ToDM() string {
+// Serialize return string like ‘ddmm.mmmm’: degree and minutes as GPS module provide
+func (l LatLong) Serialize() string {
 	if l == 0 {
 		return ""
 	}
@@ -150,8 +163,15 @@ func (l LatLong) ToDM() string {
 	return strings.Trim(fmt.Sprintf("%d%f", d, m), "0")
 }
 
+func (l LatLong) ToDM() string {
+	if l == 0 {
+		return ""
+	}
+	return strings.Trim(fmt.Sprintf("%f", l), "0")
+}
+
 // PrintDMS return string like: dd° mm' ss.ss" to be human readable
-func (l LatLong) PrintDMS() string {
+func (l LatLong) ToDMS() string {
 	degrees, minutes, secondes := l.DMS()
 	return fmt.Sprintf("%d° %d' %f\"", degrees, minutes, secondes)
 }
