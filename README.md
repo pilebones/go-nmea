@@ -1,13 +1,13 @@
 # go-nmea [![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea) [![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea) [![Build Status](https://travis-ci.org/pilebones/go-nmea.svg?branch=master)](https://travis-ci.org/pilebones/go-nmea)
 
-A Golang library for decode standard and proprietary NMEA packet message (GPS information dissector).
+A Golang library for decode and serialize standard and proprietary NMEA packet message (GPS information dissector).
 
 Tested with this [GPS Module](http://wiki.52pi.com/index.php/USB-Port-GPS_Module_SKU:EZ-0048) cover [L80 gps protocol specification v1.0.pdf](http://wiki.52pi.com/index.php/File:L80_gps_protocol_specification_v1.0.pdf).
 See another [NMEA specification](http://aprs.gids.nl/nmea/).
 
 ## NMEA Specification
 
-NMEA standard specification provide 58 kind of message with different structure. 
+NMEA standard specification provide 58 kind of message with different structure.
 And more according to GPS devices manufacturer (ex: 40 proprietary message identified prefixed by `PMTK` for `L80 GPS protocol specification`).
 
 Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
@@ -16,7 +16,7 @@ Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
 
 __/!\ Work in progress /!\__
 
-The following list will be expanded to decode new types, but now the library can decode only :
+The following list will be expanded to manage new types, but now the library can decode and serialize only :
 
 * $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
 * $GPVTG - Track Made Good and Ground Speed
