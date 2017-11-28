@@ -14,9 +14,7 @@ Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
 
 ## Supported NMEA message
 
-__/!\ Work in progress /!\__
-
-The following list will be expanded to manage new types, but now the library can decode and serialize only :
+The following list will be expanded to manage new types, but now the library can decode and serialize:
 
 * $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
 * $GPVTG - Track Made Good and Ground Speed
