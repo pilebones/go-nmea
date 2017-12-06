@@ -82,21 +82,23 @@ func TestGPSCoordinate(t *testing.T) {
 	for _, s := range samples {
 		lat, err := NewLatLong(s.DD.Latitude)
 		if err != nil {
-			t.Fatalf("[%s] Invalid lat, err: %v", s.Name, err)
+			t.Fatalf("[%s] Invalid latitude, err: %v", s.Name, err)
 		}
+
 		latDM, _ := strconv.ParseFloat(s.DD.Latitude, 64)
 		expectedLatDM := strings.Trim(fmt.Sprintf("%f", latDM), "0")
 		if lat.ToDM() != expectedLatDM {
 			t.Fatalf("[%s] Wrong latitude conversion to DM format, (got: %s, expected: %s)", s.Name, lat.ToDM(), expectedLatDM)
 		}
 
-		/*if lat.ToDMS() != s.DMS.Latitude {
-			t.Fatalf("[%s] Wrong conversion to DMS format, (got: %s, expected: %s)", s.Name, lat.ToDMS(), s.DMS.Latitude)
-		}*/
+		latDMS := lat.CardinalPoint(true).String() + " " + lat.ToDMS()
+		if latDMS != s.DMS.Latitude {
+			t.Fatalf("[%s] Wrong latitude conversion to DMS format, (got: %s, expected: %s)", s.Name, latDMS, s.DMS.Latitude)
+		}
 
 		long, err := NewLatLong(s.DD.Longitude)
 		if err != nil {
-			t.Fatalf("[%s] Invalid long, err: %v", s.Name, err)
+			t.Fatalf("[%s] Invalid longitude, err: %v", s.Name, err)
 		}
 
 		longDM, _ := strconv.ParseFloat(s.DD.Longitude, 64)
@@ -105,8 +107,9 @@ func TestGPSCoordinate(t *testing.T) {
 			t.Fatalf("[%s] Wrong longitude conversion to DM format, (got: %s, expected: %s)", s.Name, long.ToDM(), expectedLongDM)
 		}
 
-		/*if long.ToDMS() != s.DMS.Longitude {
-			t.Fatalf("[%s] Wrong conversion to DMS format, (got: %s, expected: %s)", s.Name, long.ToDMS(), s.DMS.Latitude)
-		}*/
+		longDMS := long.CardinalPoint(false).String() + " " + long.ToDMS()
+		if longDMS != s.DMS.Longitude {
+			t.Fatalf("[%s] Wrong longitude conversion to DMS format, (got: %s, expected: %s)", s.Name, longDMS, s.DMS.Longitude)
+		}
 	}
 }

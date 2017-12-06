@@ -44,7 +44,6 @@ const (
 	Max LatLong = 180
 )
 
-// FIXME: Limitation with float64 detected to keep accuracy of GPS coordinate, next step: use big.Float
 type LatLong float64
 
 // NewLatLong parses input has coordinate or return error
@@ -135,22 +134,34 @@ func (l LatLong) CardinalPoint(isLatitude bool) CardinalPoint {
 	if isLatitude {
 		return North
 	}
-
 	return East
+
 }
 
 // DM extract degrees and minutes
 func (l LatLong) DM() (int, float64) {
+	if l < 0 {
+		l = 0 - l
+	}
+
 	d := math.Floor(float64(l))
 	m := (float64(l) - d) * 60
+
 	return int(d), m
 }
 
 // DMS extract degrees, minutes and secondes
 func (l LatLong) DMS() (int, int, float64) {
+	if l < 0 {
+		l = 0 - l
+	}
+
 	d, m := l.DM()
 	m = math.Floor(m)
-	s := (float64(l) - (float64(d) + (m / 60))) * 60 * 60 // TODO: round secondes
+
+	// TODO: round secondes
+	s := ((float64(l) - (float64(d) + (m / 60))) * 60 * 60)
+
 	return d, int(m), s
 }
 
@@ -173,5 +184,5 @@ func (l LatLong) ToDM() string {
 // PrintDMS return string like: dd° mm' ss.ss" to be human readable
 func (l LatLong) ToDMS() string {
 	degrees, minutes, secondes := l.DMS()
-	return fmt.Sprintf("%d° %d' %f\"", degrees, minutes, secondes)
+	return fmt.Sprintf("%d° %d' %.3f\"", degrees, minutes, Round(secondes, 3, .8))
 }

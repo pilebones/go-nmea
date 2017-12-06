@@ -28,10 +28,10 @@ func PrependToIntXZero(value int, expected uint) string {
 }
 
 // Round a float with expected as accuracy
-func Round(value float64, expected int) float64 {
+func Round(value float64, expected int, threshold float64) float64 {
 	pow := math.Pow(10, float64(expected))
 	digit := pow * value
-	if _, div := math.Modf(digit); div >= .5 {
+	if _, div := math.Modf(digit); div >= threshold {
 		return math.Ceil(digit) / pow
 	}
 	return math.Floor(digit) / pow
