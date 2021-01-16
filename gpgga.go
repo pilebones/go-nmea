@@ -24,7 +24,7 @@ type GPGGA struct {
 	NbOfSatellitesUsed uint64
 	HDOP               float64
 	Altitude           float64
-	GeoIdSep           *float64
+	GeoIDSep           *float64
 
 	// FIXME: Manage field below when I found a sample with no-empty data
 	// DGPSAge        *uint64
@@ -78,12 +78,12 @@ func (m *GPGGA) parse() (err error) {
 		}
 	}
 
-	if geoIdSep := m.Fields[10]; len(geoIdSep) > 0 {
-		id, err := strconv.ParseFloat(m.Fields[10], 64)
+	if geoIDSep := m.Fields[10]; len(geoIDSep) > 0 {
+		id, err := strconv.ParseFloat(geoIDSep, 64)
 		if err != nil {
 			return m.Error(err)
 		}
-		m.GeoIdSep = &id
+		m.GeoIDSep = &id
 	}
 
 	return nil
@@ -116,8 +116,8 @@ func (m GPGGA) Serialize() string { // Implement NMEA interface
 
 	fields = append(fields, "M")
 
-	if m.GeoIdSep != nil {
-		fields = append(fields, fmt.Sprintf("%.1f", *m.GeoIdSep))
+	if m.GeoIDSep != nil {
+		fields = append(fields, fmt.Sprintf("%.1f", *m.GeoIDSep))
 	} else {
 		fields = append(fields, "")
 	}

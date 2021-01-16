@@ -16,7 +16,7 @@ func NewGPGSV(m Message) *GPGSV {
 }
 
 type Satellite struct {
-	Id        string
+	ID        string
 	Elevation *int // Elevation in degree (0 ~ 90)
 	Azimuth   *int // Azimuth in degree (0 ~ 359)
 	SNR       *int // Signal to Noise Ration in dBHz (0 ~ 99), empty if not tracking
@@ -27,7 +27,7 @@ func newSatelliteFromFields(f []string) (s Satellite, err error) {
 		return s, fmt.Errorf("Not enought fields for create satellite")
 	}
 
-	s.Id = f[0]
+	s.ID = f[0]
 
 	if el := strings.TrimSpace(f[1]); len(el) > 0 {
 		var elevation int
@@ -130,7 +130,7 @@ func (m GPGSV) Serialize() string { // Implement NMEA interface
 	)
 
 	for _, s := range m.Satellites {
-		fields = append(fields, s.Id)
+		fields = append(fields, s.ID)
 
 		if s.Elevation != nil {
 			fields = append(fields, PrependXZero(float64(*s.Elevation), "%.0f", 2))

@@ -64,20 +64,20 @@ func (m *GPGSA) parse() (err error) {
 
 const (
 	_ = iota
-	FIX_STATUS_NO_FIX
-	FIX_STATUS_2D
-	FIX_STATUS_3D
+	FixStatusNoFix
+	FixStatus2D
+	FixStatus3D
 )
 
 type FixStatus int
 
 func (s FixStatus) String() string {
 	switch s {
-	case FIX_STATUS_NO_FIX:
+	case FixStatusNoFix:
 		return "No fix"
-	case FIX_STATUS_2D:
+	case FixStatus2D:
 		return "2D fix"
-	case FIX_STATUS_3D:
+	case FixStatus3D:
 		return "3D fix"
 	default:
 		return "unknow"
@@ -92,7 +92,7 @@ func ParseFixStatus(raw string) (fs FixStatus, err error) {
 
 	fs = FixStatus(i)
 	switch fs {
-	case FIX_STATUS_NO_FIX, FIX_STATUS_2D, FIX_STATUS_3D:
+	case FixStatusNoFix, FixStatus2D, FixStatus3D:
 	default:
 		err = fmt.Errorf("unknow value (got: %d)", i)
 	}

@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	DMFormat = regexp.MustCompile("^([0-9]*\\.?[0-9]+)\\ ?([NSEW])?$")
+	DMFormat = regexp.MustCompile(`^([0-9]*\.?[0-9]+)\ ?([NSEW])?$`)
 )
 
 type CardinalPoint string
