@@ -1,4 +1,10 @@
-# go-nmea [![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea) [![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea) [![Build Status](https://travis-ci.org/pilebones/go-nmea.svg?branch=master)](https://travis-ci.org/pilebones/go-nmea)
+# go-nmea
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea)
+[![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea)
+[![PkgGo](https://pkg.go.dev/badge/github.com/pilebones/go-nmea)](https://pkg.go.dev/github.com/pilebones/go-nmea)
+[![Build Status](https://travis-ci.org/pilebones/go-nmea.svg?branch=master)](https://travis-ci.org/pilebones/go-nmea)
+[![Coverage Status](https://coveralls.io/repos/github/pilebones/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/pilebones/go-nmea?branch=master)
 
 A Golang library for decode and serialize standard and proprietary NMEA packet message (GPS information dissector).
 
@@ -36,7 +42,7 @@ import nmea "github.com/pilebones/go-nmea"
 
 func main() {
 	raw := "$GPGGA,015540.000,3150.68378,N,11711.93139,E,1,17,0.6,0051.6,M,0.0,M,,*58"
-	
+
 	fmt.Println("Parsing NMEA message:", raw)
 	msg, err := nmea.Parse(raw)
 	if err != nil {
