@@ -22,7 +22,7 @@ func TestGPSCoordinate(t *testing.T) {
 	// Coordinate: Latitude, Longitude
 
 	samples := []sample{
-		sample{
+		{
 			Name: "New York, United States",
 			DD: latlong{
 				Latitude:  "40.7127753",
@@ -33,7 +33,7 @@ func TestGPSCoordinate(t *testing.T) {
 				Longitude: "W 74° 0' 21.502\"",
 			},
 		},
-		sample{
+		{
 			Name: "Lyon, France",
 			DD: latlong{
 				Latitude:  "45.764043",
@@ -44,7 +44,7 @@ func TestGPSCoordinate(t *testing.T) {
 				Longitude: "E 4° 50' 8.372\"",
 			},
 		},
-		sample{
+		{
 			Name: "Buenos Aires, Argentina",
 			DD: latlong{
 				Latitude:  "-34.60368440000001",
@@ -55,7 +55,7 @@ func TestGPSCoordinate(t *testing.T) {
 				Longitude: "W 58° 22' 53.612\"",
 			},
 		},
-		sample{
+		{
 			Name: "Auckland, New Zealand",
 			DD: latlong{
 				Latitude:  "-36.8484597",
@@ -66,7 +66,7 @@ func TestGPSCoordinate(t *testing.T) {
 				Longitude: "E 174° 45' 47.993\"",
 			},
 		},
-		sample{
+		{
 			Name: "Equatorial Guinea",
 			DD: latlong{
 				Latitude:  "0.5800767981271677",
