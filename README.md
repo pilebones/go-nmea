@@ -1,10 +1,4 @@
-# go-nmea
-
-[![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea)
-[![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea)
-[![PkgGo](https://pkg.go.dev/badge/github.com/pilebones/go-nmea)](https://pkg.go.dev/github.com/pilebones/go-nmea)
-[![Build Status](https://travis-ci.org/pilebones/go-nmea.svg?branch=master)](https://travis-ci.org/pilebones/go-nmea)
-[![Coverage Status](https://coveralls.io/repos/github/pilebones/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/pilebones/go-nmea?branch=master)
+# go-nmea [![Go Report Card](https://goreportcard.com/badge/github.com/pilebones/go-nmea)](https://goreportcard.com/report/github.com/pilebones/go-nmea) [![GitHub Repo stars](https://img.shields.io/github/stars/pilebones/go-nmea)](https://somsubhra.github.io/github-release-stats/?username=pilebones&repository=go-nmea) [![GoDoc](https://godoc.org/github.com/pilebones/go-nmea?status.svg)](https://godoc.org/github.com/pilebones/go-nmea) [![Release](https://img.shields.io/github/release/pilebones/go-nmea.svg)](https://github.com/pilebones/go-nmea/releases/latest) [![License](https://img.shields.io/github/license/pilebones/go-nmea)](/LICENSE) ![Build Status](https://github.com/pilebones/go-nmea/workflows/CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/pilebones/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/pilebones/go-nmea?branch=master)
 
 A Golang library for decode and serialize standard and proprietary NMEA packet message (GPS information dissector).
 
@@ -22,13 +16,13 @@ Syntax: `$<talker_id><message_id>[<data-fields>...]*<checksum><CRLF>`
 
 The following list will be expanded to manage new types, but now the library can decode and serialize:
 
-* $GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
-* $GPVTG - Track Made Good and Ground Speed
-* $GPGGA - Global Positioning System Fix Data
-* $GPGSA - GPS DOP and active satellites
-* $GPGSV - GPS Satellites in view
-* $GPGLL - Geographic position, latitude / longitude
-* $GPTXT - Transfert various text information
+* `$GPRMC` - Recommended Minimum Specific GPS/TRANSIT Data
+* `$GPVTG` - Track Made Good and Ground Speed
+* `$GPGGA` - Global Positioning System Fix Data
+* `$GPGSA` - GPS DOP and active satellites
+* `$GPGSV` - GPS Satellites in view
+* `$GPGLL` - Geographic position, latitude / longitude
+* `$GPTXT` - Transfert various text information
 
 ## Usage
 
