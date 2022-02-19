@@ -55,7 +55,7 @@ func (t TalkerID) Serialize() string {
 	return string(t)
 }
 
-// TypeIDs is a dictionnary of all kind of NMEA message header by full-code
+// TypeIDs is a dictionary of all kind of NMEA message header by full-code
 var TypeIDs map[string]Header
 
 func init() {

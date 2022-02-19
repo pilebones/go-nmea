@@ -16,7 +16,7 @@ func TestNMEAMessage(t *testing.T) {
 		"$GPGLL,3110.2908,N,12123.2348,E,041139.000,A,A*59",
 		"$GPTXT,01,01,02,ANTSTATUS=OK*3B",
 
-		// NMEA packet when no satelite receive
+		// NMEA packet when no satellite received
 		"$GPGLL,,,,,000107.799,V,N*7B",
 		"$GPTXT,01,01,02,ANTSTATUS=OPEN*2B",
 		"$GPVTG,0.00,T,,M,0.00,N,0.00,K,N*32",

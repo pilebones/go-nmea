@@ -76,7 +76,7 @@ func (m *Message) parse(data string) (err error) {
 	}
 
 	if string(data[endMsgOffset]) != Suffix {
-		return fmt.Errorf("Message should countains with %s (got: %s)", Suffix, string(data[endMsgOffset]))
+		return fmt.Errorf("Message should contains with %s (got: %s)", Suffix, string(data[endMsgOffset]))
 	}
 
 	msg := data[startMsgOffset+1 : endMsgOffset]
@@ -88,7 +88,7 @@ func (m *Message) parse(data string) (err error) {
 
 	typ, ok := TypeIDs[fields[0]]
 	if !ok {
-		return fmt.Errorf("Message should countains a valid type id (got: %s)", fields[0])
+		return fmt.Errorf("Message should contains a valid type id (got: %s)", fields[0])
 	}
 	m.Type = typ
 
